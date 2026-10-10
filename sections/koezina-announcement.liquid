@@ -1,0 +1,37 @@
+<div class="koezina-announcement">
+  <p>{{ section.settings.text }}</p>
+</div>
+
+{% stylesheet %}
+  .koezina-announcement {
+    background: #b89a7a;
+    color: #ffffff;
+    text-align: center;
+    padding: 7px 16px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .koezina-announcement p {
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina announcement",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Tekst",
+      "default": "Free shipping from €50"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina announcement"
+    }
+  ]
+}
+{% endschema %}

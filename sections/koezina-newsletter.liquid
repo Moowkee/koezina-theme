@@ -1,0 +1,154 @@
+<section class="koezina-newsletter">
+  <div class="koezina-newsletter__inner">
+    <p class="koezina-newsletter__eyebrow">
+      {{ section.settings.eyebrow }}
+    </p>
+
+    <h2>
+      {{ section.settings.heading }}
+    </h2>
+
+    <p class="koezina-newsletter__text">
+      {{ section.settings.text }}
+    </p>
+
+    {% form 'customer', class: 'koezina-newsletter__form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      <input
+        type="email"
+        name="contact[email]"
+        placeholder="Your email address"
+        required
+      >
+
+      <button type="submit">
+        Subscribe
+      </button>
+
+      {% if form.posted_successfully? %}
+        <p class="koezina-newsletter__success">
+          Thank you for subscribing.
+        </p>
+      {% endif %}
+
+      {% if form.errors %}
+        <div class="koezina-newsletter__error">
+          {{ form.errors | default_errors }}
+        </div>
+      {% endif %}
+    {% endform %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .koezina-newsletter {
+    background: #f1ebe3;
+    padding: 84px 24px;
+    text-align: center;
+  }
+
+  .koezina-newsletter__inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .koezina-newsletter__eyebrow {
+    margin: 0 0 12px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #867b70;
+  }
+
+  .koezina-newsletter h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(38px, 5vw, 58px);
+    font-weight: 400;
+    line-height: 1.05;
+    color: #2c2823;
+  }
+
+  .koezina-newsletter__text {
+    max-width: 500px;
+    margin: 20px auto 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #6d665e;
+  }
+
+  .koezina-newsletter__form {
+    margin: 34px auto 0;
+    max-width: 520px;
+    display: flex;
+  }
+
+  .koezina-newsletter__form input {
+    flex: 1;
+    min-width: 0;
+    padding: 15px 16px;
+    border: 1px solid #cfc5ba;
+    border-right: 0;
+    background: #fffdf9;
+    font-size: 14px;
+  }
+
+  .koezina-newsletter__form button {
+    border: 0;
+    padding: 15px 24px;
+    background: #2c2823;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .koezina-newsletter__success,
+  .koezina-newsletter__error {
+    width: 100%;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 600px) {
+    .koezina-newsletter__form {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .koezina-newsletter__form input {
+      border-right: 1px solid #cfc5ba;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Kleine tekst",
+      "default": "Stay in the loop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titel",
+      "default": "A little inspiration for your kitchen"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Tekst",
+      "default": "Be the first to discover new products, collections and inspiration from Koezina."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina newsletter"
+    }
+  ]
+}
+{% endschema %}

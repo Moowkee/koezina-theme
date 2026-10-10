@@ -1,0 +1,241 @@
+<section class="koezina-hero">
+  <div class="koezina-hero__content">
+    <div class="koezina-hero__text">
+      {% if section.settings.eyebrow != blank %}
+        <p class="koezina-hero__eyebrow">
+          {{ section.settings.eyebrow }}
+        </p>
+      {% endif %}
+
+      <h1 class="koezina-hero__title">
+        {{ section.settings.heading }}
+      </h1>
+
+      {% if section.settings.subheading != blank %}
+        <p class="koezina-hero__subheading">
+          {{ section.settings.subheading }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.button_text != blank %}
+        <a
+          class="koezina-hero__button"
+          href="{{ section.settings.button_link | default: routes.all_products_collection_url }}"
+        >
+          {{ section.settings.button_text }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="koezina-hero__media">
+      {% if section.settings.image != blank %}
+        {{
+          section.settings.image
+          | image_url: width: 1800
+          | image_tag:
+            loading: 'eager',
+            class: 'koezina-hero__image',
+            alt: section.settings.image.alt
+        }}
+      {% else %}
+        <div class="koezina-hero__placeholder">
+          {{ 'lifestyle-1' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .koezina-hero {
+    background: #eee7dd;
+  }
+
+  .koezina-hero__content {
+    width: 100%;
+    min-height: 620px;
+
+    display: grid;
+    grid-template-columns: 43% 57%;
+  }
+
+  .koezina-hero__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 80px clamp(40px, 6vw, 110px);
+  }
+
+  .koezina-hero__eyebrow {
+    margin: 0 0 20px;
+
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+
+    color: #766d63;
+  }
+
+  .koezina-hero__title {
+    max-width: 520px;
+    margin: 0;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(48px, 5.3vw, 78px);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+
+    color: #2c2823;
+  }
+
+  .koezina-hero__subheading {
+    max-width: 440px;
+    margin: 28px 0 0;
+
+    font-size: 15px;
+    line-height: 1.7;
+
+    color: #6e675f;
+  }
+
+  .koezina-hero__button {
+    width: fit-content;
+    margin-top: 34px;
+    padding: 14px 27px;
+
+    background: #2c2823;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .koezina-hero__button:hover {
+    background: #4a433b;
+    transform: translateY(-1px);
+  }
+
+  .koezina-hero__media {
+    min-height: 620px;
+    overflow: hidden;
+  }
+
+  .koezina-hero__image {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .koezina-hero__placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .koezina-hero__placeholder svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  @media screen and (max-width: 900px) {
+    .koezina-hero__content {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .koezina-hero__text {
+      padding: 58px 24px 54px;
+    }
+
+    .koezina-hero__title {
+      max-width: 460px;
+      font-size: clamp(44px, 11vw, 64px);
+    }
+
+    .koezina-hero__subheading {
+      margin-top: 22px;
+      font-size: 15px;
+    }
+
+    .koezina-hero__button {
+      margin-top: 28px;
+    }
+
+    .koezina-hero__media {
+      min-height: 460px;
+    }
+  }
+
+  @media screen and (max-width: 560px) {
+    .koezina-hero__text {
+      padding: 48px 20px;
+    }
+
+    .koezina-hero__title {
+      font-size: 46px;
+    }
+
+    .koezina-hero__media {
+      min-height: 360px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Kleine tekst boven titel",
+      "default": "Thoughtful kitchen essentials"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titel",
+      "default": "Elevate your kitchen essentials"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subtitel",
+      "default": "Modern kitchenware and thoughtful organization for a beautiful everyday."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Knoptekst",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Knoplink"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero afbeelding"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina hero"
+    }
+  ]
+}
+{% endschema %}

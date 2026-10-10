@@ -1,0 +1,205 @@
+<section class="koezina-bestsellers">
+  <div class="koezina-bestsellers__inner">
+
+    <div class="koezina-bestsellers__header">
+      <p class="koezina-bestsellers__eyebrow">
+        Our favorites
+      </p>
+
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+
+    {% assign selected_collection = section.settings.collection %}
+
+    <div class="koezina-bestsellers__grid">
+      {% if selected_collection != blank %}
+        {% for product in selected_collection.products limit: section.settings.products_to_show %}
+          <a href="{{ product.url }}" class="koezina-product-card">
+
+            <div class="koezina-product-card__image-wrapper">
+              {% if product.featured_image != blank %}
+                {{
+                  product.featured_image
+                  | image_url: width: 900
+                  | image_tag:
+                    loading: 'lazy',
+                    class: 'koezina-product-card__image',
+                    alt: product.title
+                }}
+              {% else %}
+                <div class="koezina-product-card__placeholder">
+                  {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="koezina-product-card__content">
+              <h3>{{ product.title }}</h3>
+
+              <p class="koezina-product-card__price">
+                {{ product.price | money }}
+              </p>
+            </div>
+
+          </a>
+        {% endfor %}
+      {% else %}
+
+        {% for i in (1..4) %}
+          <div class="koezina-product-card">
+            <div class="koezina-product-card__image-wrapper">
+              <div class="koezina-product-card__placeholder">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            </div>
+
+            <div class="koezina-product-card__content">
+              <h3>Product name</h3>
+              <p class="koezina-product-card__price">€00,00</p>
+            </div>
+          </div>
+        {% endfor %}
+
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .koezina-bestsellers {
+    background: #fffdf9;
+    padding: 88px 32px;
+  }
+
+  .koezina-bestsellers__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .koezina-bestsellers__header {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .koezina-bestsellers__eyebrow {
+    margin: 0 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a8076;
+  }
+
+  .koezina-bestsellers__header h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(36px, 4vw, 54px);
+    font-weight: 400;
+    line-height: 1;
+    color: #2c2823;
+  }
+
+  .koezina-bestsellers__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+
+  .koezina-product-card {
+    color: #2c2823;
+    text-decoration: none;
+  }
+
+  .koezina-product-card__image-wrapper {
+    aspect-ratio: 1 / 1.15;
+    overflow: hidden;
+    background: #f0ebe4;
+  }
+
+  .koezina-product-card__image,
+  .koezina-product-card__placeholder,
+  .koezina-product-card__placeholder svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .koezina-product-card__image {
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .koezina-product-card:hover .koezina-product-card__image {
+    transform: scale(1.025);
+  }
+
+  .koezina-product-card__content {
+    padding-top: 14px;
+  }
+
+  .koezina-product-card__content h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .koezina-product-card__price {
+    margin: 0;
+    font-size: 13px;
+    color: #777067;
+  }
+
+  @media screen and (max-width: 1000px) {
+    .koezina-bestsellers__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .koezina-bestsellers {
+      padding: 64px 20px;
+    }
+
+    .koezina-bestsellers__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .koezina-product-card__content h3 {
+      font-size: 14px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina bestsellers",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titel",
+      "default": "Bestsellers"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collectie"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "Aantal producten"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina bestsellers"
+    }
+  ]
+}
+{% endschema %}

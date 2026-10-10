@@ -1,0 +1,1161 @@
+<section
+  id="KoezinaScrollLogo-{{ section.id }}"
+  class="koezina-scroll-logo"
+  data-koezina-scroll-logo
+  style="
+    --koezina-scroll-bg: {{ section.settings.background_color }};
+    --koezina-scroll-height-desktop: {{ section.settings.scroll_height_desktop }}vh;
+    --koezina-scroll-height-mobile: {{ section.settings.scroll_height_mobile }}vh;
+    --koezina-logo-width: {{ section.settings.logo_width }}px;
+  "
+>
+  <div class="koezina-scroll-logo__track">
+    <div class="koezina-scroll-logo__sticky">
+      <div class="koezina-scroll-logo__content" data-koezina-content>
+
+        {% if section.settings.eyebrow != blank %}
+          <p class="koezina-scroll-logo__eyebrow">
+            {{ section.settings.eyebrow }}
+          </p>
+        {% endif %}
+
+        <div class="koezina-scroll-logo__logo-wrap">
+          <svg
+            class="koezina-scroll-logo__svg"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="148 248 974 755"
+            role="img"
+            aria-labelledby="koezina-scroll-logo-title-{{ section.id }}"
+          >
+            <title id="koezina-scroll-logo-title-{{ section.id }}">
+              Koezina logo
+            </title>
+
+            <g id="koezina-ring">
+              <path
+                d="M801 354 A220 220 0 1 0 823 598"
+                fill="none"
+                stroke="#b89a73"
+                stroke-width="8"
+              />
+            </g>
+
+            <g id="koezina-k" fill="#29261f">
+              <path
+                fill-rule="evenodd"
+                d="M527 343 Q527 318 551 318 Q575 318 575 343 L570 498 L705 366 L724 366 L571 516 L571 600 Q572 649 611 681 Q531 675 531 611 Z M540 347 A11 11 0 1 0 562 347 A11 11 0 1 0 540 347 Z"
+              />
+            </g>
+
+            <g
+              id="koezina-whisk"
+              fill="none"
+              stroke="#29261f"
+              stroke-width="6"
+              stroke-linecap="round"
+            >
+              <path
+                d="M619 453 C647 474 765 551 759 594 C755 626 713 625 692 601 C670 571 638 503 619 453 Z"
+              />
+              <path
+                d="M623 458 C660 506 724 563 743 593 C750 611 733 620 719 604 C688 568 649 503 623 458"
+              />
+            </g>
+
+            <g id="koezina-bowl" fill="#b89a73">
+              <path
+                d="M588 604 H797 Q746 684 697 681 Q611 679 588 604 Z"
+              />
+            </g>
+
+            <g id="koezina-letters" fill="#29261f">
+
+              <g data-letter="0">
+                <path
+                  d="M168 786 H185 V838 L240 786 H255 L203 836 L262 894 H239 L185 843 V894 H168 Z"
+                />
+              </g>
+
+              <g data-letter="1">
+                <path
+                  fill-rule="evenodd"
+                  d="M362 783 C442 783 445 896 362 896 C279 896 281 783 362 783 Z M362 790 C307 790 307 889 362 889 C418 889 418 790 362 790 Z"
+                />
+              </g>
+
+              <g data-letter="2">
+                <path
+                  d="M482 786 H559 V794 H482 Z M482 834 H529 V843 H482 Z M482 886 H559 V894 H482 Z"
+                />
+              </g>
+
+              <g data-letter="3">
+                <path
+                  d="M623 786 H716 L650 885 H715 V894 H616 L682 794 H623 Z"
+                />
+              </g>
+
+              <g data-letter="4">
+                <path
+                  d="M774 786 H791 V894 H774 Z"
+                />
+              </g>
+
+              <g data-letter="5">
+                <path
+                  d="M857 786 H876 L939 862 V786 H947 V894 H932 L865 813 V894 H857 Z"
+                />
+              </g>
+
+              <g data-letter="6">
+                <path
+                  d="M999 894 L1043 786 H1059 L1102 894 H1083 L1049 808 L1014 894 Z"
+                />
+              </g>
+
+            </g>
+
+            <g id="koezina-rule" fill="#b89a73">
+              <path
+                d="M373 964 H595 V968 H373 Z M658 964 H882 V968 H658 Z M628 949 L645 966 L628 983 L611 966 Z"
+              />
+            </g>
+          </svg>
+        </div>
+
+        {% if section.settings.caption != blank %}
+          <p class="koezina-scroll-logo__caption">
+            {{ section.settings.caption }}
+          </p>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .koezina-scroll-logo {
+    width: 100%;
+    max-width: none;
+
+    background: var(--koezina-scroll-bg);
+
+    overflow-x: clip;
+  }
+
+  .koezina-scroll-logo__track {
+    position: relative;
+
+    min-height: var(--koezina-scroll-height-desktop);
+  }
+
+  .koezina-scroll-logo__sticky {
+    position: sticky;
+    top: 0;
+
+    width: 100%;
+    height: 100svh;
+    min-height: 600px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+  }
+
+  .koezina-scroll-logo__content {
+    width: 100%;
+    max-width: 1200px;
+
+    padding: 40px 32px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    will-change: transform, opacity;
+  }
+
+  .koezina-scroll-logo__eyebrow {
+    margin: 0 0 20px;
+
+    color: #8c7c69;
+
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.2;
+
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-scroll-logo__logo-wrap {
+    width: min(
+      var(--koezina-logo-width),
+      calc(100vw - 64px)
+    );
+
+    margin: 0 auto;
+  }
+
+  .koezina-scroll-logo__svg {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    overflow: visible;
+  }
+
+  .koezina-scroll-logo__caption {
+    margin: 18px 0 0;
+
+    color: #81786d;
+
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  #koezina-ring,
+  #koezina-k,
+  #koezina-whisk,
+  #koezina-bowl,
+  #koezina-rule,
+  #koezina-letters [data-letter] {
+    transform-box: fill-box;
+    transform-origin: center;
+    will-change: transform, opacity;
+  }
+
+  #koezina-whisk {
+    transform-origin: 23% 18%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .koezina-scroll-logo__track {
+      min-height: var(--koezina-scroll-height-mobile);
+    }
+
+    .koezina-scroll-logo__sticky {
+      min-height: 100svh;
+    }
+
+    .koezina-scroll-logo__content {
+      padding: 32px 16px;
+    }
+
+    .koezina-scroll-logo__logo-wrap {
+      width: min(
+        var(--koezina-logo-width),
+        calc(100vw - 28px)
+      );
+    }
+
+    .koezina-scroll-logo__eyebrow {
+      margin-bottom: 12px;
+    }
+
+    .koezina-scroll-logo__caption {
+      margin-top: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .koezina-scroll-logo__track {
+      min-height: auto;
+    }
+
+    .koezina-scroll-logo__sticky {
+      position: relative;
+
+      height: auto;
+      min-height: auto;
+
+      padding: 72px 0;
+    }
+
+    .koezina-scroll-logo__content,
+    #koezina-ring,
+    #koezina-k,
+    #koezina-whisk,
+    #koezina-bowl,
+    #koezina-rule,
+    #koezina-letters [data-letter] {
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const SELECTOR =
+      '[data-koezina-scroll-logo]';
+
+    const clamp = (
+      value,
+      min,
+      max
+    ) => {
+      return Math.min(
+        Math.max(value, min),
+        max
+      );
+    };
+
+    const smoothstep = (value) => {
+      const x = clamp(
+        value,
+        0,
+        1
+      );
+
+      return (
+        x *
+        x *
+        (3 - 2 * x)
+      );
+    };
+
+    const range = (
+      value,
+      start,
+      end
+    ) => {
+      if (start === end) {
+        return 0;
+      }
+
+      return smoothstep(
+        (value - start) /
+        (end - start)
+      );
+    };
+
+    const initKoezinaScrollLogo = (
+      section
+    ) => {
+      if (
+        !section ||
+        section.dataset
+          .koezinaScrollInitialized ===
+          'true'
+      ) {
+        return;
+      }
+
+      section.dataset
+        .koezinaScrollInitialized =
+        'true';
+
+      const reducedMotion =
+        window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        );
+
+      const content =
+        section.querySelector(
+          '[data-koezina-content]'
+        );
+
+      const ring =
+        section.querySelector(
+          '#koezina-ring'
+        );
+
+      const iconK =
+        section.querySelector(
+          '#koezina-k'
+        );
+
+      const whisk =
+        section.querySelector(
+          '#koezina-whisk'
+        );
+
+      const bowl =
+        section.querySelector(
+          '#koezina-bowl'
+        );
+
+      const rule =
+        section.querySelector(
+          '#koezina-rule'
+        );
+
+      const letters =
+        Array.from(
+          section.querySelectorAll(
+            '#koezina-letters [data-letter]'
+          )
+        );
+
+      if (
+        !content ||
+        !ring ||
+        !iconK ||
+        !whisk ||
+        !bowl ||
+        !rule ||
+        letters.length !== 7
+      ) {
+        return;
+      }
+
+      let targetProgress = 0;
+      let currentProgress = 0;
+
+      let animationFrame = null;
+      let previousTimestamp = 0;
+      let running = false;
+
+      const responsiveScale = () => {
+        return clamp(
+          window.innerWidth / 1100,
+          0.52,
+          1
+        );
+      };
+
+      const getProgress = () => {
+        const rect =
+          section.getBoundingClientRect();
+
+        const distance =
+          rect.height -
+          window.innerHeight;
+
+        if (distance <= 0) {
+          return 0;
+        }
+
+        return clamp(
+          -rect.top / distance,
+          0,
+          1
+        );
+      };
+
+      const reset = () => {
+        content.style.transform = '';
+        content.style.opacity = '';
+
+        ring.style.transform = '';
+        iconK.style.transform = '';
+        whisk.style.transform = '';
+        bowl.style.transform = '';
+        rule.style.transform = '';
+
+        letters.forEach(
+          (letter) => {
+            letter.style.transform = '';
+          }
+        );
+      };
+
+      const render = (
+        progress
+      ) => {
+        if (
+          reducedMotion.matches
+        ) {
+          reset();
+          return;
+        }
+
+        const scale =
+          responsiveScale();
+
+        /*
+         * ==============================
+         * 1 — GARDE ROERT
+         * ==============================
+         *
+         * Begint vrijwel direct.
+         */
+        const stirIn =
+          range(
+            progress,
+            0.04,
+            0.10
+          );
+
+        const stirOut =
+          1 -
+          range(
+            progress,
+            0.22,
+            0.31
+          );
+
+        const stirring =
+          stirIn *
+          stirOut;
+
+        /*
+         * ==============================
+         * 2 — LOGO VALT UIT ELKAAR
+         * ==============================
+         *
+         * Eén doorlopende beweging.
+         *
+         * Er is GEEN terugkeer.
+         */
+        const explode =
+          range(
+            progress,
+            0.15,
+            0.78
+          );
+
+        /*
+         * ==============================
+         * 3 — VERDWIJNEN
+         * ==============================
+         *
+         * Richting volgende section.
+         */
+        const exit =
+          range(
+            progress,
+            0.68,
+            0.98
+          );
+
+        /*
+         * Hele compositie heel licht
+         * omhoog laten verdwijnen.
+         */
+        content.style.opacity =
+          String(
+            1 -
+            (
+              exit *
+              0.98
+            )
+          );
+
+        content.style.transform =
+          `translateY(${
+            -35 *
+            exit *
+            scale
+          }px)
+          scale(${
+            1 -
+            (
+              0.025 *
+              exit
+            )
+          })`;
+
+        /*
+         * ==============================
+         * GOUDEN CIRKEL
+         * ==============================
+         */
+
+        ring.style.transform =
+          `translate(
+            ${
+              210 *
+              explode *
+              scale
+            }px,
+            ${
+              -145 *
+              explode *
+              scale
+            }px
+          )
+          rotate(${
+            205 *
+            explode
+          }deg)
+          scale(${
+            1 +
+            (
+              0.08 *
+              explode
+            )
+          })`;
+
+        /*
+         * ==============================
+         * GROTE K
+         * ==============================
+         */
+
+        iconK.style.transform =
+          `translate(
+            ${
+              -210 *
+              explode *
+              scale
+            }px,
+            ${
+              -110 *
+              explode *
+              scale
+            }px
+          )
+          rotate(${
+            -13 *
+            explode
+          }deg)`;
+
+        /*
+         * ==============================
+         * GARDE
+         * ==============================
+         *
+         * Eerst roeren.
+         * Daarna uit de kom vliegen.
+         */
+
+        const stirAngle =
+          progress *
+          Math.PI *
+          2 *
+          3.4;
+
+        const stirX =
+          Math.cos(
+            stirAngle
+          ) *
+          12 *
+          stirring;
+
+        const stirY =
+          Math.sin(
+            stirAngle
+          ) *
+          6 *
+          stirring;
+
+        const stirRotation =
+          Math.sin(
+            stirAngle
+          ) *
+          5 *
+          stirring;
+
+        const whiskX =
+          250 *
+          explode *
+          scale;
+
+        const whiskY =
+          -210 *
+          explode *
+          scale;
+
+        const whiskRotation =
+          22 *
+          explode;
+
+        whisk.style.transform =
+          `translate(
+            ${
+              stirX +
+              whiskX
+            }px,
+            ${
+              stirY +
+              whiskY
+            }px
+          )
+          rotate(${
+            stirRotation +
+            whiskRotation
+          }deg)`;
+
+        /*
+         * ==============================
+         * KOM
+         * ==============================
+         */
+
+        bowl.style.transform =
+          `translate(
+            ${
+              40 *
+              explode *
+              scale
+            }px,
+            ${
+              185 *
+              explode *
+              scale
+            }px
+          )
+          rotate(${
+            7 *
+            explode
+          }deg)`;
+
+        /*
+         * ==============================
+         * LETTERS
+         * ==============================
+         *
+         * Iedere letter krijgt echt
+         * een eigen route.
+         */
+
+        const letterMovement = [
+          {
+            x: -300,
+            y: -80,
+            r: -14
+          },
+          {
+            x: -205,
+            y: 145,
+            r: 10
+          },
+          {
+            x: -115,
+            y: -145,
+            r: -9
+          },
+          {
+            x: 0,
+            y: 190,
+            r: 11
+          },
+          {
+            x: 120,
+            y: -140,
+            r: -9
+          },
+          {
+            x: 205,
+            y: 140,
+            r: 10
+          },
+          {
+            x: 305,
+            y: -75,
+            r: -14
+          }
+        ];
+
+        letters.forEach(
+          (
+            letter,
+            index
+          ) => {
+            const move =
+              letterMovement[
+                index
+              ];
+
+            if (!move) {
+              return;
+            }
+
+            letter.style.transform =
+              `translate(
+                ${
+                  move.x *
+                  explode *
+                  scale
+                }px,
+                ${
+                  move.y *
+                  explode *
+                  scale
+                }px
+              )
+              rotate(${
+                move.r *
+                explode
+              }deg)`;
+          }
+        );
+
+        /*
+         * ==============================
+         * ONDERSTE GOUDEN ORNAMENT
+         * ==============================
+         */
+
+        rule.style.transform =
+          `translate(
+            ${
+              -25 *
+              explode *
+              scale
+            }px,
+            ${
+              205 *
+              explode *
+              scale
+            }px
+          )
+          rotate(${
+            -4 *
+            explode
+          }deg)
+          scaleX(${
+            1 +
+            (
+              0.12 *
+              explode
+            )
+          })`;
+      };
+
+      /*
+       * ==============================
+       * SMOOTH SCROLL FOLLOWING
+       * ==============================
+       *
+       * Geen autoplay.
+       *
+       * Scrollpositie blijft de bron,
+       * maar de animatie loopt er
+       * soepel achteraan.
+       */
+
+      const animate = (
+        timestamp
+      ) => {
+        if (
+          reducedMotion.matches
+        ) {
+          reset();
+
+          running = false;
+          previousTimestamp = 0;
+
+          return;
+        }
+
+        if (
+          !previousTimestamp
+        ) {
+          previousTimestamp =
+            timestamp;
+        }
+
+        const delta =
+          Math.min(
+            (
+              timestamp -
+              previousTimestamp
+            ) / 1000,
+            0.05
+          );
+
+        previousTimestamp =
+          timestamp;
+
+        /*
+         * 7.5 geeft een zachte,
+         * premium vertraging.
+         */
+        const speed = 7.5;
+
+        const factor =
+          1 -
+          Math.exp(
+            -speed *
+            delta
+          );
+
+        currentProgress +=
+          (
+            targetProgress -
+            currentProgress
+          ) *
+          factor;
+
+        render(
+          currentProgress
+        );
+
+        const difference =
+          Math.abs(
+            targetProgress -
+            currentProgress
+          );
+
+        if (
+          difference >
+          0.0001
+        ) {
+          animationFrame =
+            window
+              .requestAnimationFrame(
+                animate
+              );
+        } else {
+          currentProgress =
+            targetProgress;
+
+          render(
+            currentProgress
+          );
+
+          previousTimestamp = 0;
+          running = false;
+        }
+      };
+
+      const start = () => {
+        if (running) {
+          return;
+        }
+
+        running = true;
+        previousTimestamp = 0;
+
+        animationFrame =
+          window
+            .requestAnimationFrame(
+              animate
+            );
+      };
+
+      const handleScroll = () => {
+        targetProgress =
+          getProgress();
+
+        start();
+      };
+
+      const handleResize = () => {
+        targetProgress =
+          getProgress();
+
+        currentProgress =
+          targetProgress;
+
+        render(
+          currentProgress
+        );
+      };
+
+      window.addEventListener(
+        'scroll',
+        handleScroll,
+        {
+          passive: true
+        }
+      );
+
+      window.addEventListener(
+        'resize',
+        handleResize
+      );
+
+      if (
+        reducedMotion
+          .addEventListener
+      ) {
+        reducedMotion
+          .addEventListener(
+            'change',
+            handleResize
+          );
+      }
+
+      /*
+       * Eerste frame meteen correct.
+       */
+      targetProgress =
+        getProgress();
+
+      currentProgress =
+        targetProgress;
+
+      render(
+        currentProgress
+      );
+
+      section
+        ._koezinaScrollCleanup =
+        () => {
+          window
+            .removeEventListener(
+              'scroll',
+              handleScroll
+            );
+
+          window
+            .removeEventListener(
+              'resize',
+              handleResize
+            );
+
+          if (
+            reducedMotion
+              .removeEventListener
+          ) {
+            reducedMotion
+              .removeEventListener(
+                'change',
+                handleResize
+              );
+          }
+
+          if (
+            animationFrame
+          ) {
+            window
+              .cancelAnimationFrame(
+                animationFrame
+              );
+          }
+
+          delete section
+            .dataset
+            .koezinaScrollInitialized;
+        };
+    };
+
+    const initAll = (
+      root = document
+    ) => {
+      if (
+        root.matches &&
+        root.matches(
+          SELECTOR
+        )
+      ) {
+        initKoezinaScrollLogo(
+          root
+        );
+      }
+
+      root
+        .querySelectorAll?.(
+          SELECTOR
+        )
+        .forEach(
+          initKoezinaScrollLogo
+        );
+    };
+
+    if (
+      document.readyState ===
+      'loading'
+    ) {
+      document
+        .addEventListener(
+          'DOMContentLoaded',
+          () => initAll()
+        );
+    } else {
+      initAll();
+    }
+
+    /*
+     * Shopify Theme Editor.
+     */
+    document.addEventListener(
+      'shopify:section:load',
+      (event) => {
+        initAll(
+          event.target
+        );
+      }
+    );
+
+    document.addEventListener(
+      'shopify:section:unload',
+      (event) => {
+        const section =
+          event.target
+            .matches?.(
+              SELECTOR
+            )
+            ? event.target
+            : event.target
+                .querySelector?.(
+                  SELECTOR
+                );
+
+        if (
+          section &&
+          typeof section
+            ._koezinaScrollCleanup ===
+            'function'
+        ) {
+          section
+            ._koezinaScrollCleanup();
+        }
+      }
+    );
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Koezina scroll logo",
+  "tag": "section",
+  "class": "koezina-scroll-logo-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Kleine tekst boven logo",
+      "default": "The details of Koezina"
+    },
+    {
+      "type": "textarea",
+      "id": "caption",
+      "label": "Tekst onder logo",
+      "default": "Small details. Big difference."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Achtergrondkleur",
+      "default": "#f7f3ed"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Maximale logobreedte",
+      "min": 300,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "scroll_height_desktop",
+      "label": "Animatielengte desktop",
+      "min": 150,
+      "max": 260,
+      "step": 10,
+      "unit": "vh",
+      "default": 190
+    },
+    {
+      "type": "range",
+      "id": "scroll_height_mobile",
+      "label": "Animatielengte mobiel",
+      "min": 140,
+      "max": 220,
+      "step": 10,
+      "unit": "vh",
+      "default": 170
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina scroll logo"
+    }
+  ]
+}
+{% endschema %}

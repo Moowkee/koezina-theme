@@ -1,0 +1,374 @@
+<header class="koezina-header">
+  <div class="koezina-header__inner">
+
+    <a class="koezina-header__logo" href="{{ routes.root_url }}">
+      {% if section.settings.logo != blank %}
+        {{
+          section.settings.logo
+          | image_url: width: 320
+          | image_tag:
+            loading: 'eager',
+            class: 'koezina-header__logo-image',
+            alt: shop.name
+        }}
+      {% else %}
+        <span class="koezina-header__logo-text">
+          {{ shop.name }}
+        </span>
+      {% endif %}
+    </a>
+
+    <nav class="koezina-header__nav" aria-label="Main navigation">
+      {% if section.settings.menu != blank %}
+        <ul class="koezina-header__menu">
+          {% for link in section.settings.menu.links %}
+            <li>
+              <a href="{{ link.url }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+
+    <div class="koezina-header__actions">
+
+      <a
+        class="koezina-header__icon-link koezina-header__search"
+        href="{{ routes.search_url }}"
+        aria-label="Zoeken"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6"></circle>
+          <path d="M16 16l4 4"></path>
+        </svg>
+      </a>
+
+      {% if shop.customer_accounts_enabled %}
+        <a
+          class="koezina-header__icon-link koezina-header__account"
+          href="{{ routes.account_url }}"
+          aria-label="Account"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 20c1.6-4 4.2-6 8-6s6.4 2 8 6"></path>
+          </svg>
+        </a>
+      {% endif %}
+
+      <a
+        class="koezina-header__icon-link koezina-header__cart"
+        href="{{ routes.cart_url }}"
+        aria-label="Winkelmand"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 5h2l2.2 10h9.8l2-7H7"></path>
+          <circle cx="10" cy="19" r="1.4"></circle>
+          <circle cx="17" cy="19" r="1.4"></circle>
+        </svg>
+
+        {% if cart.item_count > 0 %}
+          <span class="koezina-header__cart-count">
+            {{ cart.item_count }}
+          </span>
+        {% endif %}
+      </a>
+
+      <button
+        class="koezina-header__menu-button"
+        type="button"
+        aria-label="Menu openen"
+        aria-expanded="false"
+        data-koezina-menu-button
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="koezina-mobile-menu" data-koezina-mobile-menu>
+    {% if section.settings.menu != blank %}
+      <nav aria-label="Mobile navigation">
+        <ul class="koezina-mobile-menu__list">
+          {% for link in section.settings.menu.links %}
+            <li>
+              <a href="{{ link.url }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</header>
+
+{% stylesheet %}
+  .koezina-header {
+    position: relative;
+    width: 100%;
+    background: #fffdf9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    z-index: 20;
+  }
+
+  .koezina-header__inner {
+    width: 100%;
+    min-height: 64px;
+    padding: 0 48px;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+
+  .koezina-header__logo {
+    justify-self: start;
+
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+
+    color: #1f1f1b;
+    text-decoration: none;
+  }
+
+  .koezina-header__logo-image {
+    display: block;
+    width: auto;
+    max-width: 150px;
+    max-height: 36px;
+  }
+
+  .koezina-header__logo-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 23px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-header__nav {
+    justify-self: center;
+  }
+
+  .koezina-header__menu {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .koezina-header__menu a {
+    color: #25231f;
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 400;
+
+    transition: opacity 0.2s ease;
+  }
+
+  .koezina-header__menu a:hover {
+    opacity: 0.55;
+  }
+
+  .koezina-header__actions {
+    justify-self: end;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .koezina-header__icon-link {
+    position: relative;
+
+    width: 21px;
+    height: 21px;
+
+    color: #25231f;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .koezina-header__icon-link svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .koezina-header__cart-count {
+    position: absolute;
+    top: -8px;
+    right: -9px;
+
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+
+    border-radius: 999px;
+
+    background: #a9825e;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .koezina-header__menu-button {
+    display: none;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+    border: 0;
+
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .koezina-header__menu-button span {
+    display: block;
+
+    width: 22px;
+    height: 1.5px;
+
+    margin: 5px 0;
+
+    background: #25231f;
+
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .koezina-mobile-menu {
+    display: none;
+
+    background: #fffdf9;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .koezina-mobile-menu.is-open {
+    display: block;
+  }
+
+  .koezina-mobile-menu__list {
+    margin: 0;
+    padding: 18px 24px 28px;
+
+    list-style: none;
+  }
+
+  .koezina-mobile-menu__list li + li {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .koezina-mobile-menu__list a {
+    display: block;
+
+    padding: 15px 0;
+
+    color: #25231f;
+    text-decoration: none;
+
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 850px) {
+    .koezina-header__inner {
+      grid-template-columns: 1fr auto;
+
+      min-height: 66px;
+      padding: 0 20px;
+    }
+
+    .koezina-header__nav {
+      display: none;
+    }
+
+    .koezina-header__logo-image {
+      max-width: 125px;
+    }
+
+    .koezina-header__menu-button {
+      display: block;
+    }
+
+    .koezina-header__search,
+    .koezina-header__account {
+      display: none;
+    }
+
+    .koezina-header__actions {
+      gap: 14px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const button = document.querySelector('[data-koezina-menu-button]');
+    const menu = document.querySelector('[data-koezina-mobile-menu]');
+
+    if (!button || !menu) return;
+
+    button.addEventListener('click', () => {
+      const isOpen = menu.classList.toggle('is-open');
+
+      button.setAttribute(
+        'aria-expanded',
+        isOpen ? 'true' : 'false'
+      );
+
+      button.setAttribute(
+        'aria-label',
+        isOpen ? 'Menu sluiten' : 'Menu openen'
+      );
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Koezina header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina header"
+    }
+  ]
+}
+{% endschema %}

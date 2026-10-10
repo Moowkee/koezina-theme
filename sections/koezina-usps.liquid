@@ -1,0 +1,93 @@
+<section class="koezina-usps">
+  <div class="koezina-usps__inner">
+
+    <div class="koezina-usps__item">
+      <span class="koezina-usps__icon">✦</span>
+      <div>
+        <h3>Natural materials</h3>
+        <p>Thoughtfully chosen for everyday use.</p>
+      </div>
+    </div>
+
+    <div class="koezina-usps__item">
+      <span class="koezina-usps__icon">✦</span>
+      <div>
+        <h3>Timeless design</h3>
+        <p>Simple pieces that fit every kitchen.</p>
+      </div>
+    </div>
+
+    <div class="koezina-usps__item">
+      <span class="koezina-usps__icon">✦</span>
+      <div>
+        <h3>Everyday function</h3>
+        <p>Made to make small moments easier.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .koezina-usps {
+    background: #fffdf9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .koezina-usps__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 30px 32px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+
+  .koezina-usps__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .koezina-usps__icon {
+    font-size: 18px;
+    line-height: 1;
+    color: #a9825e;
+    margin-top: 3px;
+  }
+
+  .koezina-usps__item h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c2823;
+  }
+
+  .koezina-usps__item p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #756f67;
+  }
+
+  @media screen and (max-width: 800px) {
+    .koezina-usps__inner {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      padding: 26px 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina USP's",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Koezina USP's"
+    }
+  ]
+}
+{% endschema %}

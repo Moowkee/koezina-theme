@@ -1,47 +1,1438 @@
 {% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+  Koezina collection page
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+{% assign selected_sort_by = collection.sort_by | default: collection.default_sort_by %}
+{% assign active_filter_count = 0 %}
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+{% for filter in collection.filters %}
+  {% if filter.type == 'price_range' %}
+    {% if filter.min_value.value != blank or filter.max_value.value != blank %}
+      {% assign active_filter_count = active_filter_count | plus: 1 %}
+    {% endif %}
+  {% else %}
+    {% assign active_filter_count = active_filter_count | plus: filter.active_values.size %}
+  {% endif %}
+{% endfor %}
+
+<section
+  id="KoezinaCollection-{{ section.id }}"
+  class="koezina-collection"
+  data-koezina-collection
+>
+
+  <div class="koezina-collection__hero">
+
+    <div class="koezina-collection__hero-content">
+
+      <p class="koezina-collection__eyebrow">
+        {{ section.settings.eyebrow }}
+      </p>
+
+      <h1 class="koezina-collection__title">
+        {{ collection.title }}
+      </h1>
+
+      {% if collection.description != blank %}
+        <div class="koezina-collection__description">
+          {{ collection.description }}
         </div>
-      </div>
-    {% endfor %}
+      {% elsif section.settings.fallback_description != blank %}
+        <p class="koezina-collection__description">
+          {{ section.settings.fallback_description }}
+        </p>
+      {% endif %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+    </div>
+
+    {% if section.settings.show_collection_image and collection.image != blank %}
+      <div class="koezina-collection__hero-image">
+        {{
+          collection.image
+          | image_url: width: 1800
+          | image_tag:
+            loading: 'eager',
+            widths: '600, 900, 1200, 1500, 1800',
+            sizes: '(max-width: 749px) 100vw, 50vw',
+            alt: collection.title
+        }}
+      </div>
+    {% endif %}
+
+  </div>
+
+  <div class="koezina-collection__shop">
+
+    <form
+      action="{{ collection.url }}"
+      method="get"
+      class="koezina-collection__controls-form"
+      data-collection-controls
+    >
+
+      <div class="koezina-collection__toolbar">
+
+        <div class="koezina-collection__toolbar-left">
+
+          <p class="koezina-collection__product-count">
+            {{ collection.products_count }}
+
+            {% if collection.products_count == 1 %}
+              product
+            {% else %}
+              producten
+            {% endif %}
+          </p>
+
+          {% if collection.filters.size > 0 %}
+            <button
+              type="button"
+              class="koezina-collection__filter-toggle"
+              data-filter-toggle
+              aria-expanded="false"
+              aria-controls="KoezinaFilters-{{ section.id }}"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h16"></path>
+                <path d="M7 12h10"></path>
+                <path d="M10 17h4"></path>
+              </svg>
+
+              Filters
+
+              {% if active_filter_count > 0 %}
+                <span class="koezina-collection__filter-count">
+                  {{ active_filter_count }}
+                </span>
+              {% endif %}
+            </button>
+          {% endif %}
+
+        </div>
+
+        <div class="koezina-collection__sort">
+
+          <label for="SortBy-{{ section.id }}">
+            Sorteren
+          </label>
+
+          <div class="koezina-collection__sort-select">
+
+            <select
+              id="SortBy-{{ section.id }}"
+              name="sort_by"
+              data-collection-sort
+            >
+              {% for option in collection.sort_options %}
+                <option
+                  value="{{ option.value }}"
+                  {% if option.value == selected_sort_by %}
+                    selected
+                  {% endif %}
+                >
+                  {{ option.name }}
+                </option>
+              {% endfor %}
+            </select>
+
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M5 7.5L10 12.5L15 7.5"></path>
+            </svg>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {% if collection.filters.size > 0 %}
+
+        <div
+          id="KoezinaFilters-{{ section.id }}"
+          class="koezina-collection__filters"
+          data-filter-panel
+          hidden
+        >
+
+          <div class="koezina-collection__filters-inner">
+
+            {% for filter in collection.filters %}
+
+              <details class="koezina-collection__filter">
+
+                <summary>
+                  <span>{{ filter.label }}</span>
+
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M5 7.5L10 12.5L15 7.5"></path>
+                  </svg>
+                </summary>
+
+                <div class="koezina-collection__filter-content">
+
+                  {% case filter.type %}
+
+                    {% when 'boolean', 'list' %}
+
+                      <div class="koezina-collection__filter-values">
+
+                        {% for value in filter.values %}
+
+                          <label class="koezina-collection__filter-value">
+
+                            <input
+                              type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}
+                                checked
+                              {% endif %}
+                              {% if value.count == 0 and value.active == false %}
+                                disabled
+                              {% endif %}
+                            >
+
+                            <span class="koezina-collection__checkbox">
+                              <svg viewBox="0 0 20 20" aria-hidden="true">
+                                <path d="M5 10L8.2 13.2L15 6.5"></path>
+                              </svg>
+                            </span>
+
+                            <span>
+                              {{ value.label }}
+                            </span>
+
+                            <span class="koezina-collection__filter-value-count">
+                              {{ value.count }}
+                            </span>
+
+                          </label>
+
+                        {% endfor %}
+
+                      </div>
+
+                    {% when 'price_range' %}
+
+                      <div class="koezina-collection__price-filter">
+
+                        <div class="koezina-collection__price-field">
+
+                          <label>
+                            Vanaf
+                          </label>
+
+                          <div>
+                            <span>€</span>
+
+                            <input
+                              type="number"
+                              name="{{ filter.min_value.param_name }}"
+                              min="0"
+                              max="{{ filter.range_max | divided_by: 100.0 }}"
+                              step="0.01"
+                              {% if filter.min_value.value %}
+                                value="{{ filter.min_value.value | divided_by: 100.0 }}"
+                              {% endif %}
+                              placeholder="0"
+                            >
+                          </div>
+
+                        </div>
+
+                        <span class="koezina-collection__price-divider">
+                          —
+                        </span>
+
+                        <div class="koezina-collection__price-field">
+
+                          <label>
+                            Tot
+                          </label>
+
+                          <div>
+                            <span>€</span>
+
+                            <input
+                              type="number"
+                              name="{{ filter.max_value.param_name }}"
+                              min="0"
+                              max="{{ filter.range_max | divided_by: 100.0 }}"
+                              step="0.01"
+                              {% if filter.max_value.value %}
+                                value="{{ filter.max_value.value | divided_by: 100.0 }}"
+                              {% endif %}
+                              placeholder="{{ filter.range_max | divided_by: 100.0 }}"
+                            >
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                  {% endcase %}
+
+                </div>
+
+              </details>
+
+            {% endfor %}
+
+            <div class="koezina-collection__filter-actions">
+
+              <a
+                href="{{ collection.url }}?sort_by={{ selected_sort_by }}"
+                class="koezina-collection__clear-filters"
+              >
+                Wis filters
+              </a>
+
+              <button
+                type="submit"
+                class="koezina-collection__apply-filters"
+              >
+                Toon resultaten
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      {% endif %}
+
+    </form>
+
+    {% paginate collection.products by section.settings.products_per_page %}
+
+      {% if collection.products.size > 0 %}
+
+        <div class="koezina-collection__grid">
+
+          {% for product in collection.products %}
+
+            {% assign card_image = product.featured_image %}
+            {% assign second_image = product.images[1] %}
+            {% assign card_variant = product.selected_or_first_available_variant %}
+
+            <article class="koezina-product-card">
+
+              <div class="koezina-product-card__media">
+
+                <a
+                  href="{{ product.url }}"
+                  class="koezina-product-card__image-link"
+                  aria-label="{{ product.title | escape }}"
+                >
+
+                  {% if card_image %}
+
+                    {{
+                      card_image
+                      | image_url: width: 1000
+                      | image_tag:
+                        class: 'koezina-product-card__image koezina-product-card__image--primary',
+                        loading: 'lazy',
+                        widths: '300, 450, 600, 800, 1000',
+                        sizes: '(max-width: 749px) 50vw, (max-width: 1100px) 33vw, 25vw',
+                        alt: product.title
+                    }}
+
+                    {% if section.settings.enable_image_hover and second_image != blank %}
+
+                      {{
+                        second_image
+                        | image_url: width: 1000
+                        | image_tag:
+                          class: 'koezina-product-card__image koezina-product-card__image--secondary',
+                          loading: 'lazy',
+                          widths: '300, 450, 600, 800, 1000',
+                          sizes: '(max-width: 749px) 50vw, (max-width: 1100px) 33vw, 25vw',
+                          alt: product.title
+                      }}
+
+                    {% endif %}
+
+                  {% else %}
+
+                    {{ 'product-1' | placeholder_svg_tag: 'koezina-product-card__placeholder' }}
+
+                  {% endif %}
+
+                </a>
+
+                <div class="koezina-product-card__badges">
+
+                  {% unless product.available %}
+
+                    <span class="koezina-product-card__badge">
+                      Uitverkocht
+                    </span>
+
+                  {% else %}
+
+                    {% if product.compare_at_price_max > product.price %}
+                      <span class="koezina-product-card__badge koezina-product-card__badge--sale">
+                        Sale
+                      </span>
+                    {% endif %}
+
+                  {% endunless %}
+
+                </div>
+
+                {% if section.settings.show_quick_add %}
+
+                  <div class="koezina-product-card__quick">
+
+                    {% if product.available and product.has_only_default_variant %}
+
+                      {% form 'product', product, class: 'koezina-product-card__quick-form' %}
+
+                        <input
+                          type="hidden"
+                          name="id"
+                          value="{{ card_variant.id }}"
+                        >
+
+                        <input
+                          type="hidden"
+                          name="quantity"
+                          value="1"
+                        >
+
+                        <button
+                          type="submit"
+                          name="add"
+                          class="koezina-product-card__quick-button"
+                        >
+                          Snel toevoegen
+                        </button>
+
+                      {% endform %}
+
+                    {% elsif product.available %}
+
+                      <a
+                        href="{{ product.url }}"
+                        class="koezina-product-card__quick-button"
+                      >
+                        Bekijk opties
+                      </a>
+
+                    {% endif %}
+
+                  </div>
+
+                {% endif %}
+
+              </div>
+
+              <div class="koezina-product-card__content">
+
+                <div class="koezina-product-card__content-top">
+
+                  <h2 class="koezina-product-card__title">
+                    <a href="{{ product.url }}">
+                      {{ product.title }}
+                    </a>
+                  </h2>
+
+                  <div class="koezina-product-card__price">
+
+                    {% if product.price_varies %}
+                      <span>
+                        Vanaf {{ product.price_min | money }}
+                      </span>
+                    {% else %}
+                      <span>
+                        {{ product.price | money }}
+                      </span>
+                    {% endif %}
+
+                    {% if product.compare_at_price_max > product.price %}
+                      <s>
+                        {{ product.compare_at_price_max | money }}
+                      </s>
+                    {% endif %}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          {% endfor %}
+
+        </div>
+
+      {% else %}
+
+        <div class="koezina-collection__empty">
+
+          <p class="koezina-collection__empty-eyebrow">
+            Geen resultaten
+          </p>
+
+          <h2>
+            Geen producten gevonden
+          </h2>
+
+          <p>
+            Er zijn momenteel geen producten in deze collectie.
+          </p>
+
+        </div>
+
+      {% endif %}
+
+      {% if paginate.pages > 1 %}
+
+        <nav
+          class="koezina-pagination"
+          aria-label="Paginering"
+        >
+
+          {% if paginate.previous %}
+            <a
+              href="{{ paginate.previous.url }}"
+              class="koezina-pagination__arrow"
+              aria-label="Vorige pagina"
+            >
+              ←
+            </a>
+          {% endif %}
+
+          {% for part in paginate.parts %}
+
+            {% if part.is_link %}
+              <a href="{{ part.url }}">
+                {{ part.title }}
+              </a>
+            {% else %}
+              <span
+                {% if part.title == paginate.current_page %}
+                  class="is-current"
+                {% endif %}
+              >
+                {{ part.title }}
+              </span>
+            {% endif %}
+
+          {% endfor %}
+
+          {% if paginate.next %}
+            <a
+              href="{{ paginate.next.url }}"
+              class="koezina-pagination__arrow"
+              aria-label="Volgende pagina"
+            >
+              →
+            </a>
+          {% endif %}
+
+        </nav>
+
+      {% endif %}
+
+    {% endpaginate %}
+
+  </div>
+
+</section>
 
 {% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+
+.koezina-collection,
+.koezina-collection *,
+.koezina-collection *::before,
+.koezina-collection *::after {
+  box-sizing: border-box;
+}
+
+.koezina-collection {
+  width: 100%;
+  background: #fffdf9;
+  color: #29261f;
+}
+
+/* HERO */
+
+.koezina-collection__hero {
+  width: 100%;
+  min-height: 300px;
+
+  display: grid;
+  grid-template-columns: 1fr;
+
+  background: #eee7dd;
+}
+
+.koezina-collection__hero:has(.koezina-collection__hero-image) {
+  grid-template-columns: .9fr 1.1fr;
+}
+
+.koezina-collection__hero-content {
+  padding: 55px clamp(40px, 7vw, 110px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.koezina-collection__eyebrow {
+  margin: 0 0 14px;
+
+  color: #9f8264;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.koezina-collection__title {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(50px, 6.3vw, 78px);
+  font-weight: 400;
+  line-height: .96;
+
+  letter-spacing: -.045em;
+}
+
+.koezina-collection__description {
+  max-width: 520px;
+
+  margin-top: 22px;
+
+  color: #686159;
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.koezina-collection__hero-image {
+  min-height: 300px;
+
+  overflow: hidden;
+}
+
+.koezina-collection__hero-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+/* SHOP */
+
+.koezina-collection__shop {
+  width: 100%;
+  max-width: 1600px;
+
+  margin: 0 auto;
+
+  padding: 36px 48px 105px;
+}
+
+/* TOOLBAR */
+
+.koezina-collection__toolbar {
+  min-height: 58px;
+
+  padding-bottom: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  border-bottom: 1px solid #e8e1d8;
+}
+
+.koezina-collection__toolbar-left {
+  display: flex;
+  align-items: center;
+
+  gap: 24px;
+}
+
+.koezina-collection__product-count {
+  margin: 0;
+
+  color: #827a71;
+
+  font-size: 10px;
+}
+
+.koezina-collection__filter-toggle {
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  border: 0;
+
+  background: transparent;
+  color: #29261f;
+
+  font: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.koezina-collection__filter-toggle svg {
+  width: 17px;
+  height: 17px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+
+.koezina-collection__filter-count {
+  min-width: 18px;
+  height: 18px;
+
+  padding: 0 5px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background: #b89a73;
+  color: #fffdf9;
+
+  font-size: 8px;
+}
+
+.koezina-collection__sort {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.koezina-collection__sort label {
+  color: #827a71;
+
+  font-size: 9px;
+}
+
+.koezina-collection__sort-select {
+  position: relative;
+}
+
+.koezina-collection__sort-select select {
+  min-width: 170px;
+
+  padding: 10px 32px 10px 12px;
+
+  appearance: none;
+
+  border: 1px solid #ded6cc;
+  border-radius: 0;
+
+  background: transparent;
+  color: #29261f;
+
+  font: inherit;
+  font-size: 10px;
+}
+
+.koezina-collection__sort-select svg {
+  position: absolute;
+
+  top: 50%;
+  right: 10px;
+
+  width: 13px;
+  height: 13px;
+
+  transform: translateY(-50%);
+
+  fill: none;
+  stroke: currentColor;
+
+  pointer-events: none;
+}
+
+/* FILTERS */
+
+.koezina-collection__filters[hidden] {
+  display: none;
+}
+
+.koezina-collection__filters {
+  padding: 26px 0 30px;
+
+  border-bottom: 1px solid #e8e1d8;
+}
+
+.koezina-collection__filters-inner {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 20px 30px;
+}
+
+.koezina-collection__filter {
+  border-bottom: 1px solid #e5ded5;
+}
+
+.koezina-collection__filter summary {
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  list-style: none;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.koezina-collection__filter summary::-webkit-details-marker {
+  display: none;
+}
+
+.koezina-collection__filter summary svg {
+  width: 14px;
+  height: 14px;
+
+  fill: none;
+  stroke: currentColor;
+}
+
+.koezina-collection__filter-content {
+  padding: 4px 0 18px;
+}
+
+.koezina-collection__filter-values {
+  display: grid;
+
+  gap: 9px;
+}
+
+.koezina-collection__filter-value {
+  display: grid;
+
+  grid-template-columns:
+    17px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: #686159;
+
+  font-size: 10px;
+}
+
+.koezina-collection__filter-value input {
+  position: absolute;
+
+  opacity: 0;
+}
+
+.koezina-collection__checkbox {
+  width: 16px;
+  height: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #cfc6bc;
+}
+
+.koezina-collection__checkbox svg {
+  width: 11px;
+  height: 11px;
+
+  fill: none;
+  stroke: #fffdf9;
+
+  opacity: 0;
+}
+
+.koezina-collection__filter-value
+input:checked
++ .koezina-collection__checkbox {
+  background: #29261f;
+  border-color: #29261f;
+}
+
+.koezina-collection__filter-value
+input:checked
++ .koezina-collection__checkbox
+svg {
+  opacity: 1;
+}
+
+.koezina-collection__price-filter {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: end;
+
+  gap: 10px;
+}
+
+.koezina-collection__price-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 9px;
+}
+
+.koezina-collection__price-field > div {
+  height: 39px;
+
+  display: flex;
+  align-items: center;
+
+  border: 1px solid #ddd5cb;
+}
+
+.koezina-collection__price-field span {
+  padding-left: 10px;
+
+  font-size: 10px;
+}
+
+.koezina-collection__price-field input {
+  width: 100%;
+
+  padding: 0 8px;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+}
+
+.koezina-collection__price-divider {
+  padding-bottom: 11px;
+}
+
+.koezina-collection__filter-actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 20px;
+}
+
+.koezina-collection__clear-filters {
+  color: #756d64;
+
+  font-size: 10px;
+
+  text-underline-offset: 3px;
+}
+
+.koezina-collection__apply-filters {
+  min-height: 42px;
+
+  padding: 0 24px;
+
+  border: 1px solid #29261f;
+
+  background: #29261f;
+  color: #fffdf9;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* GRID */
+
+.koezina-collection__grid {
+  margin-top: 32px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 52px 18px;
+}
+
+.koezina-product-card__media {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: .84 / 1;
+
+  overflow: hidden;
+
+  background: #f3f0eb;
+}
+
+.koezina-product-card__image-link {
+  position: absolute;
+  inset: 0;
+}
+
+.koezina-product-card__image,
+.koezina-product-card__placeholder {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.koezina-product-card__image {
+  transition:
+    opacity .45s ease,
+    transform .65s cubic-bezier(.22, 1, .36, 1);
+}
+
+.koezina-product-card__image--secondary {
+  opacity: 0;
+}
+
+.koezina-product-card:hover
+.koezina-product-card__image--primary {
+  transform: scale(1.025);
+}
+
+.koezina-product-card:hover
+.koezina-product-card__image--secondary {
+  opacity: 1;
+
+  transform: scale(1.025);
+}
+
+.koezina-product-card__badges {
+  position: absolute;
+
+  top: 12px;
+  left: 12px;
+
+  z-index: 2;
+}
+
+.koezina-product-card__badge {
+  min-height: 27px;
+
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+
+  background: #29261f;
+  color: #fffdf9;
+
+  font-size: 8px;
+
+  text-transform: uppercase;
+}
+
+.koezina-product-card__badge--sale {
+  background: #b89a73;
+}
+
+/* QUICK ADD */
+
+.koezina-product-card__quick {
+  position: absolute;
+
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+
+  z-index: 4;
+
+  opacity: 0;
+
+  transform: translateY(12px);
+
+  pointer-events: none;
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
+}
+
+.koezina-product-card:hover
+.koezina-product-card__quick,
+.koezina-product-card:focus-within
+.koezina-product-card__quick {
+  opacity: 1;
+
+  transform: translateY(0);
+
+  pointer-events: auto;
+}
+
+.koezina-product-card__quick-form {
+  margin: 0;
+}
+
+.koezina-product-card__quick-button {
+  width: 100%;
+  min-height: 47px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #29261f;
+
+  background: #29261f;
+  color: #fffdf9;
+
+  font: inherit;
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.koezina-product-card__quick-button:hover {
+  background: #fffdf9;
+  color: #29261f;
+}
+
+/* CARD CONTENT */
+
+.koezina-product-card__content {
+  padding-top: 15px;
+}
+
+.koezina-product-card__content-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.koezina-product-card__title {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.koezina-product-card__title a {
+  color: #29261f;
+
+  text-decoration: none;
+}
+
+.koezina-product-card__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  gap: 4px;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+}
+
+.koezina-product-card__price s {
+  color: #9b9288;
+
+  font-size: 9px;
+}
+
+/* EMPTY */
+
+.koezina-collection__empty {
+  margin: 90px auto;
+
+  text-align: center;
+}
+
+.koezina-collection__empty-eyebrow {
+  color: #aa8b68;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+}
+
+.koezina-collection__empty h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 38px;
+  font-weight: 400;
+}
+
+/* PAGINATION */
+
+.koezina-pagination {
+  margin-top: 70px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.koezina-pagination a,
+.koezina-pagination span {
+  min-width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #29261f;
+
+  text-decoration: none;
+}
+
+.koezina-pagination .is-current {
+  background: #29261f;
+  color: #fffdf9;
+}
+
+/* TABLET */
+
+@media screen and (max-width: 1100px) {
+
+  .koezina-collection__shop {
+    padding:
+      34px
+      30px
+      90px;
   }
+
+  .koezina-collection__grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .koezina-collection__filters-inner {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* MOBILE */
+
+@media screen and (max-width: 749px) {
+
+  .koezina-collection__hero,
+  .koezina-collection__hero:has(.koezina-collection__hero-image) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .koezina-collection__hero-content {
+    min-height: 255px;
+
+    padding: 42px 20px;
+  }
+
+  .koezina-collection__title {
+    font-size: 50px;
+  }
+
+  .koezina-collection__hero-image {
+    min-height: 320px;
+  }
+
+  .koezina-collection__shop {
+    padding:
+      25px
+      16px
+      70px;
+  }
+
+  .koezina-collection__grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 34px 10px;
+  }
+
+  .koezina-product-card__quick {
+    right: 7px;
+    bottom: 7px;
+    left: 7px;
+
+    opacity: 1;
+
+    transform: none;
+
+    pointer-events: auto;
+  }
+
+  .koezina-product-card__quick-button {
+    min-height: 39px;
+
+    font-size: 8px;
+  }
+
+  .koezina-product-card__content-top {
+    display: block;
+  }
+
+  .koezina-product-card__price {
+    margin-top: 7px;
+
+    align-items: flex-start;
+  }
+
+}
+
 {% endstylesheet %}
+
+{% javascript %}
+
+(() => {
+
+  const sections =
+    document.querySelectorAll(
+      '[data-koezina-collection]'
+    );
+
+  sections.forEach((section) => {
+
+    const form =
+      section.querySelector(
+        '[data-collection-controls]'
+      );
+
+    const toggle =
+      section.querySelector(
+        '[data-filter-toggle]'
+      );
+
+    const panel =
+      section.querySelector(
+        '[data-filter-panel]'
+      );
+
+    const sort =
+      section.querySelector(
+        '[data-collection-sort]'
+      );
+
+    toggle?.addEventListener(
+      'click',
+      () => {
+
+        if (!panel) {
+          return;
+        }
+
+        panel.hidden =
+          !panel.hidden;
+
+        toggle.setAttribute(
+          'aria-expanded',
+          String(!panel.hidden)
+        );
+
+      }
+    );
+
+    sort?.addEventListener(
+      'change',
+      () => {
+        form?.submit();
+      }
+    );
+
+  });
+
+})();
+
+{% endjavascript %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Koezina collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Tekst boven titel",
+      "default": "Collectie"
+    },
+    {
+      "type": "textarea",
+      "id": "fallback_description",
+      "label": "Standaard beschrijving",
+      "default": "Ontdek doordachte keukenitems die functionaliteit combineren met een rustige, tijdloze uitstraling."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Toon collectie-afbeelding",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "label": "Producten per pagina",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_image_hover",
+      "label": "Toon tweede afbeelding bij hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "Toon snel toevoegen",
+      "default": true
+    }
+  ]
 }
 {% endschema %}

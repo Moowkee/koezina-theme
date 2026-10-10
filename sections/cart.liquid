@@ -1,37 +1,1785 @@
 {% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
+  Koezina cart page
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+{% assign free_shipping_threshold = 5000 %}
+{% assign amount_remaining = free_shipping_threshold | minus: cart.items_subtotal_price %}
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+{% if amount_remaining < 0 %}
+  {% assign amount_remaining = 0 %}
+{% endif %}
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+{% assign shipping_progress = cart.items_subtotal_price
+  | times: 100.0
+  | divided_by: free_shipping_threshold
+%}
+
+{% if shipping_progress > 100 %}
+  {% assign shipping_progress = 100 %}
+{% endif %}
+
+<section
+  class="koezina-cart-page"
+  data-koezina-cart-page
+  data-free-shipping-threshold="{{ free_shipping_threshold }}"
+>
+
+  <div class="koezina-cart-page__header">
+
+    <p class="koezina-cart-page__eyebrow">
+      Koezina
+    </p>
+
+    <h1>Winkelmand</h1>
+
+    {% if cart.item_count > 0 %}
+      <p
+        class="koezina-cart-page__count"
+        data-cart-page-count
+      >
+        {{ cart.item_count }}
+        {% if cart.item_count == 1 %}
+          artikel
+        {% else %}
+          artikelen
+        {% endif %}
+      </p>
+    {% endif %}
+
+  </div>
+
+  {% if cart.item_count > 0 %}
+
+    <div class="koezina-cart-page__shipping">
+
+      <p data-cart-page-shipping-text>
+        {% if amount_remaining == 0 %}
+          <strong>Gratis verzending behaald.</strong>
+        {% else %}
+          Nog
+          <strong>{{ amount_remaining | money }}</strong>
+          voor gratis verzending.
+        {% endif %}
+      </p>
+
+      <div class="koezina-cart-page__shipping-track">
+        <span
+          data-cart-page-shipping-progress
+          style="width: {{ shipping_progress }}%;"
+        ></span>
+      </div>
+
+    </div>
+
+    <form
+      action="{{ routes.cart_url }}"
+      method="post"
+      class="koezina-cart-page__form"
+      data-koezina-cart-form
+    >
+
+      <div class="koezina-cart-page__layout">
+
+        <div class="koezina-cart-page__items">
+
+          {% for item in cart.items %}
+
+            <article
+              class="koezina-cart-page__item"
+              data-cart-page-item
+              data-cart-key="{{ item.key }}"
+            >
+
+              <a
+                href="{{ item.url }}"
+                class="koezina-cart-page__image"
+              >
+                {% if item.image %}
+                  {{
+                    item.image
+                    | image_url: width: 500
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '160, 240, 320, 500',
+                      sizes: '(max-width: 749px) 90px, 130px',
+                      alt: item.product.title
+                  }}
+                {% endif %}
+              </a>
+
+              <div class="koezina-cart-page__item-info">
+
+                <div class="koezina-cart-page__item-top">
+
+                  <div>
+
+                    <a
+                      href="{{ item.url }}"
+                      class="koezina-cart-page__item-title"
+                    >
+                      {{ item.product.title }}
+                    </a>
+
+                    {% unless item.variant.title == 'Default Title' %}
+                      <p class="koezina-cart-page__variant">
+                        {{ item.variant.title }}
+                      </p>
+                    {% endunless %}
+
+                  </div>
+
+                  <button
+                    type="button"
+                    class="koezina-cart-page__remove"
+                    data-cart-page-remove
+                    aria-label="Verwijder {{ item.product.title }}"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M6 6L18 18"></path>
+                      <path d="M18 6L6 18"></path>
+                    </svg>
+                  </button>
+
+                </div>
+
+                <div class="koezina-cart-page__item-bottom">
+
+                  <div class="koezina-cart-page__quantity">
+
+                    <button
+                      type="button"
+                      data-cart-page-minus
+                      aria-label="Aantal verlagen"
+                    >
+                      −
+                    </button>
+
+                    <input
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      inputmode="numeric"
+                      aria-label="Aantal {{ item.product.title }}"
+                      data-cart-page-quantity
+                    >
+
+                    <button
+                      type="button"
+                      data-cart-page-plus
+                      aria-label="Aantal verhogen"
+                    >
+                      +
+                    </button>
+
+                  </div>
+
+                  <div class="koezina-cart-page__prices">
+
+                    <span
+                      class="koezina-cart-page__old-price"
+                      data-cart-page-old-price
+                      {% unless item.original_line_price > item.final_line_price %}
+                        hidden
+                      {% endunless %}
+                    >
+                      {% if item.original_line_price > item.final_line_price %}
+                        {{ item.original_line_price | money }}
+                      {% endif %}
+                    </span>
+
+                    <strong data-cart-page-line-price>
+                      {{ item.final_line_price | money }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          {% endfor %}
+
+          <div class="koezina-cart-page__actions">
+
+            <a
+              href="{{ routes.all_products_collection_url }}"
+              class="koezina-cart-page__continue"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M19 12H5"></path>
+                <path d="M10 7L5 12L10 17"></path>
+              </svg>
+
+              Verder winkelen
+            </a>
+
+            <span
+              class="koezina-cart-page__status"
+              data-cart-page-status
+              aria-live="polite"
+            ></span>
+
+          </div>
+
+        </div>
+
+        <aside class="koezina-cart-page__summary">
+
+          <p class="koezina-cart-page__summary-eyebrow">
+            Overzicht
+          </p>
+
+          <h2>Bestelling</h2>
+
+          <div class="koezina-cart-page__summary-line">
+
+            <span>Subtotaal</span>
+
+            <strong data-cart-page-subtotal>
+              {{ cart.items_subtotal_price | money }}
+            </strong>
+
+          </div>
+
+          <div
+            class="koezina-cart-page__discount-list"
+            data-cart-page-discounts
+            {% if cart.cart_level_discount_applications.size == 0 %}
+              hidden
+            {% endif %}
+          >
+
+            {% for discount in cart.cart_level_discount_applications %}
+
+              <div class="koezina-cart-page__discount">
+
+                <span>
+                  {{ discount.title }}
+                </span>
+
+                <strong>
+                  −{{ discount.total_allocated_amount | money }}
+                </strong>
+
+              </div>
+
+            {% endfor %}
+
+          </div>
+
+          <div class="koezina-cart-page__summary-line koezina-cart-page__summary-line--total">
+
+            <span>Totaal</span>
+
+            <strong data-cart-page-total>
+              {{ cart.total_price | money }}
+            </strong>
+
+          </div>
+
+          <p class="koezina-cart-page__note">
+            Verzendkosten en eventuele aanvullende kortingen
+            worden berekend bij het afrekenen.
+          </p>
+
+          <button
+            type="submit"
+            name="checkout"
+            class="koezina-cart-page__checkout"
+          >
+            Afrekenen
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M5 12H19"></path>
+              <path d="M14 7L19 12L14 17"></path>
+            </svg>
+          </button>
+
+          <div class="koezina-cart-page__trust">
+
+            <div class="koezina-cart-page__trust-item">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M7 10V7a5 5 0 0 1 10 0v3"></path>
+                <rect
+                  x="5"
+                  y="10"
+                  width="14"
+                  height="10"
+                  rx="1"
+                ></rect>
+              </svg>
+
+              <span>
+                Veilig en beveiligd afrekenen
+              </span>
+
+            </div>
+
+            <div class="koezina-cart-page__trust-item">
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M4 12a8 8 0 1 0 2-5.3"></path>
+                <path d="M4 4v6h6"></path>
+              </svg>
+
+              <span>
+                14 dagen retourneren
+              </span>
+
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </form>
+
+  {% else %}
+
+    <div class="koezina-cart-page__empty">
+
+      <div class="koezina-cart-page__empty-icon">
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="M3 5H5L7.2 15H17L19 8H7"></path>
+          <circle cx="10" cy="19" r="1.4"></circle>
+          <circle cx="17" cy="19" r="1.4"></circle>
+        </svg>
+
+      </div>
+
+      <h2>Je winkelmand is leeg</h2>
+
+      <p>
+        Ontdek onze keukenitems en vind producten
+        die een klein verschil maken in je dagelijkse routine.
+      </p>
+
+      <a href="{{ routes.all_products_collection_url }}">
+        Shop de collectie
+      </a>
+
+    </div>
+
+  {% endif %}
+
+</section>
+
+{% stylesheet %}
+
+  .koezina-cart-page,
+  .koezina-cart-page *,
+  .koezina-cart-page *::before,
+  .koezina-cart-page *::after {
+    box-sizing: border-box;
+  }
+
+  .koezina-cart-page {
+    width: 100%;
+
+    padding:
+      68px
+      48px
+      105px;
+
+    background: #fffdf9;
+    color: #29261f;
+  }
+
+  /* =========================================
+     HEADER
+  ========================================== */
+
+  .koezina-cart-page__header {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto 38px;
+  }
+
+  .koezina-cart-page__eyebrow {
+    margin: 0 0 12px;
+
+    color: #aa8b68;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-cart-page__header h1 {
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(46px, 6vw, 76px);
+    font-weight: 400;
+    line-height: .98;
+
+    letter-spacing: -.04em;
+  }
+
+  .koezina-cart-page__count {
+    margin: 15px 0 0;
+
+    color: #867e75;
+
+    font-size: 11px;
+  }
+
+  /* =========================================
+     SHIPPING
+  ========================================== */
+
+  .koezina-cart-page__shipping {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto 34px;
+
+    padding: 20px 25px;
+
+    background: #f5f1eb;
+  }
+
+  .koezina-cart-page__shipping p {
+    margin: 0 0 13px;
+
+    color: #625b53;
+
+    font-size: 12px;
+  }
+
+  .koezina-cart-page__shipping strong {
+    color: #29261f;
+  }
+
+  .koezina-cart-page__shipping-track {
+    position: relative;
+
+    width: 100%;
+    height: 4px;
+
+    overflow: hidden;
+
+    background: #ded6cc;
+  }
+
+  .koezina-cart-page__shipping-track span {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    background: #b89a73;
+
+    transition: width .3s ease;
+  }
+
+  /* =========================================
+     LAYOUT
+  ========================================== */
+
+  .koezina-cart-page__form {
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+  }
+
+  .koezina-cart-page__layout {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      390px;
+
+    gap: clamp(45px, 6vw, 95px);
+
+    align-items: start;
+  }
+
+  /* =========================================
+     ITEMS
+  ========================================== */
+
+  .koezina-cart-page__items {
+    min-width: 0;
+  }
+
+  .koezina-cart-page__item {
+    display: grid;
+
+    grid-template-columns:
+      130px
+      minmax(0, 1fr);
+
+    gap: 25px;
+
+    padding: 22px 0;
+
+    border-top: 1px solid #e7dfd6;
+
+    transition:
+      opacity .2s ease;
+  }
+
+  .koezina-cart-page__item:last-of-type {
+    border-bottom: 1px solid #e7dfd6;
+  }
+
+  .koezina-cart-page__item.is-updating {
+    opacity: .45;
+
+    pointer-events: none;
+  }
+
+  .koezina-cart-page__image {
+    display: block;
+
+    width: 130px;
+    aspect-ratio: 1 / 1.08;
+
+    overflow: hidden;
+
+    background: #f3f0eb;
+  }
+
+  .koezina-cart-page__image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .koezina-cart-page__item-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .koezina-cart-page__item-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 22px;
+  }
+
+  .koezina-cart-page__item-title {
+    color: #29261f;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 22px;
+    font-weight: 400;
+
+    line-height: 1.2;
+
+    text-decoration: none;
+  }
+
+  .koezina-cart-page__item-title:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .koezina-cart-page__variant {
+    margin: 6px 0 0;
+
+    color: #948a7f;
+
+    font-size: 10px;
+  }
+
+  .koezina-cart-page__remove {
+    flex: 0 0 34px;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 8px;
+    margin: -5px -5px 0 0;
+
+    border: 0;
+
+    background: transparent;
+    color: #91877c;
+
+    cursor: pointer;
+  }
+
+  .koezina-cart-page__remove:hover {
+    color: #29261f;
+  }
+
+  .koezina-cart-page__remove svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+
+  .koezina-cart-page__item-bottom {
+    margin-top: auto;
+
+    padding-top: 19px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+  }
+
+  /* =========================================
+     QUANTITY
+  ========================================== */
+
+  .koezina-cart-page__quantity {
+    height: 43px;
+
+    display: grid;
+
+    grid-template-columns:
+      39px
+      40px
+      39px;
+
+    border: 1px solid #dcd3c9;
+  }
+
+  .koezina-cart-page__quantity button {
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: #29261f;
+
+    font-size: 18px;
+
+    cursor: pointer;
+  }
+
+  .koezina-cart-page__quantity button:hover {
+    background: #f5f1eb;
+  }
+
+  .koezina-cart-page__quantity input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: #29261f;
+
+    font: inherit;
+    font-size: 12px;
+
+    text-align: center;
+
+    appearance: textfield;
+  }
+
+  .koezina-cart-page__quantity input::-webkit-inner-spin-button,
+  .koezina-cart-page__quantity input::-webkit-outer-spin-button {
+    appearance: none;
+  }
+
+  .koezina-cart-page__prices {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    white-space: nowrap;
+  }
+
+  .koezina-cart-page__old-price {
+    color: #a69d93;
+
+    font-size: 12px;
+
+    text-decoration: line-through;
+  }
+
+  .koezina-cart-page__prices strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* =========================================
+     ACTIONS
+  ========================================== */
+
+  .koezina-cart-page__actions {
+    min-height: 35px;
+
+    margin-top: 19px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+  }
+
+  .koezina-cart-page__continue {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #71695f;
+
+    font-size: 11px;
+
+    text-decoration: none;
+  }
+
+  .koezina-cart-page__continue:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .koezina-cart-page__continue svg {
+    width: 15px;
+    height: 15px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .koezina-cart-page__status {
+    color: #8e857b;
+
+    font-size: 10px;
+  }
+
+  /* =========================================
+     SUMMARY
+  ========================================== */
+
+  .koezina-cart-page__summary {
+    position: sticky;
+    top: 100px;
+
+    margin: 0;
+
+    padding: 32px;
+
+    background: #f5f1eb;
+  }
+
+  .koezina-cart-page__summary-eyebrow {
+    margin: 0 0 8px;
+
+    color: #a38768;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  .koezina-cart-page__summary h2 {
+    margin: 0 0 30px;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 31px;
+    font-weight: 400;
+  }
+
+  .koezina-cart-page__summary-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #ddd4ca;
+
+    font-size: 12px;
+  }
+
+  .koezina-cart-page__summary-line strong {
+    font-size: 13px;
+  }
+
+  .koezina-cart-page__summary-line--total {
+    padding-top: 22px;
+
+    border-bottom: 0;
+  }
+
+  .koezina-cart-page__summary-line--total span {
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 20px;
+  }
+
+  .koezina-cart-page__summary-line--total strong {
+    font-size: 20px;
+  }
+
+  .koezina-cart-page__discount-list {
+    padding-top: 8px;
+  }
+
+  .koezina-cart-page__discount-list[hidden] {
+    display: none;
+  }
+
+  .koezina-cart-page__discount {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 7px 0;
+
+    color: #746c63;
+
+    font-size: 10px;
+  }
+
+  .koezina-cart-page__note {
+    margin: 4px 0 22px;
+
+    color: #8e857b;
+
+    font-size: 9px;
+    line-height: 1.6;
+  }
+
+  .koezina-cart-page__checkout {
+    width: 100%;
+    min-height: 56px;
+
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    border: 1px solid #29261f;
+
+    background: #29261f;
+    color: #fffdf9;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .12em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+      background .2s ease,
+      color .2s ease;
+  }
+
+  .koezina-cart-page__checkout:hover {
+    background: transparent;
+    color: #29261f;
+  }
+
+  .koezina-cart-page__checkout svg {
+    width: 16px;
+    height: 16px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .koezina-cart-page__trust {
+    margin-top: 20px;
+
+    display: grid;
+
+    gap: 10px;
+  }
+
+  .koezina-cart-page__trust-item {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    color: #81786e;
+
+    font-size: 9px;
+  }
+
+  .koezina-cart-page__trust-item svg {
+    flex: 0 0 auto;
+
+    width: 15px;
+    height: 15px;
+
+    fill: none;
+    stroke: #b89a73;
+
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* =========================================
+     EMPTY
+  ========================================== */
+
+  .koezina-cart-page__empty {
+    width: 100%;
+    max-width: 650px;
+
+    margin: 45px auto 0;
+
+    padding: 70px 20px;
+
+    text-align: center;
+  }
+
+  .koezina-cart-page__empty-icon {
+    width: 44px;
+    height: 44px;
+
+    margin: 0 auto 25px;
+
+    color: #b89a73;
+  }
+
+  .koezina-cart-page__empty-icon svg {
+    width: 100%;
+    height: 100%;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.3;
+  }
+
+  .koezina-cart-page__empty h2 {
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 38px;
+    font-weight: 400;
+  }
+
+  .koezina-cart-page__empty p {
+    max-width: 440px;
+
+    margin: 18px auto 27px;
+
+    color: #7e766d;
+
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .koezina-cart-page__empty a {
+    min-height: 52px;
+
+    padding: 0 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #29261f;
+    color: #fffdf9;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  /* =========================================
+     TABLET
+  ========================================== */
+
+  @media screen and (max-width: 1000px) {
+
+    .koezina-cart-page__layout {
+      grid-template-columns:
+        minmax(0, 1fr)
+        330px;
+
+      gap: 36px;
+    }
+
+    .koezina-cart-page__summary {
+      padding: 27px;
+    }
+
+  }
+
+  /* =========================================
+     MOBILE
+  ========================================== */
+
+  @media screen and (max-width: 749px) {
+
+    .koezina-cart-page {
+      padding:
+        48px
+        20px
+        75px;
+    }
+
+    .koezina-cart-page__header {
+      margin-bottom: 30px;
+    }
+
+    .koezina-cart-page__header h1 {
+      font-size: 48px;
+    }
+
+    .koezina-cart-page__shipping {
+      margin-bottom: 25px;
+
+      padding: 18px;
+    }
+
+    .koezina-cart-page__layout {
+      display: block;
+    }
+
+    .koezina-cart-page__item {
+      grid-template-columns:
+        96px
+        minmax(0, 1fr);
+
+      gap: 16px;
+
+      padding: 20px 0;
+    }
+
+    .koezina-cart-page__image {
+      width: 96px;
+    }
+
+    .koezina-cart-page__item-title {
+      font-size: 18px;
+    }
+
+    .koezina-cart-page__item-bottom {
+      padding-top: 16px;
+    }
+
+    .koezina-cart-page__quantity {
+      height: 40px;
+
+      grid-template-columns:
+        35px
+        34px
+        35px;
+    }
+
+    .koezina-cart-page__actions {
+      margin-bottom: 42px;
+    }
+
+    .koezina-cart-page__summary {
+      position: static;
+
+      padding: 27px 22px;
+    }
+
+  }
+
+  @media screen and (max-width: 430px) {
+
+    .koezina-cart-page {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .koezina-cart-page__item {
+      grid-template-columns:
+        80px
+        minmax(0, 1fr);
+
+      gap: 13px;
+    }
+
+    .koezina-cart-page__image {
+      width: 80px;
+    }
+
+    .koezina-cart-page__item-title {
+      font-size: 16px;
+    }
+
+    .koezina-cart-page__item-bottom {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+  }
+
+{% endstylesheet %}
+
+{% javascript %}
+
+  (() => {
+
+    const page =
+      document.querySelector(
+        '[data-koezina-cart-page]'
+      );
+
+    if (!page) {
+      return;
+    }
+
+    const form =
+      page.querySelector(
+        '[data-koezina-cart-form]'
+      );
+
+    if (!form) {
+      return;
+    }
+
+    const subtotal =
+      page.querySelector(
+        '[data-cart-page-subtotal]'
+      );
+
+    const total =
+      page.querySelector(
+        '[data-cart-page-total]'
+      );
+
+    const count =
+      page.querySelector(
+        '[data-cart-page-count]'
+      );
+
+    const shippingText =
+      page.querySelector(
+        '[data-cart-page-shipping-text]'
+      );
+
+    const shippingProgress =
+      page.querySelector(
+        '[data-cart-page-shipping-progress]'
+      );
+
+    const status =
+      page.querySelector(
+        '[data-cart-page-status]'
+      );
+
+    const discounts =
+      page.querySelector(
+        '[data-cart-page-discounts]'
+      );
+
+    const threshold =
+      Number(
+        page.dataset.freeShippingThreshold
+      ) || 5000;
+
+    const root =
+      window.Shopify?.routes?.root || '/';
+
+    const formatter =
+      new Intl.NumberFormat(
+        document.documentElement.lang || 'nl-NL',
+        {
+          style: 'currency',
+          currency:
+            window.Shopify?.currency?.active || 'EUR'
+        }
+      );
+
+    const formatMoney = (cents) => {
+      return formatter.format(
+        Number(cents || 0) / 100
+      );
+    };
+
+    const escapeHtml = (value = '') => {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    };
+
+    const updateHeaderCount = (
+      itemCount
+    ) => {
+
+      const cartLink =
+        document.querySelector(
+          '.koezina-header__cart'
+        );
+
+      if (!cartLink) {
+        return;
+      }
+
+      let badge =
+        cartLink.querySelector(
+          '.koezina-header__cart-count'
+        );
+
+      if (itemCount <= 0) {
+        badge?.remove();
+        return;
+      }
+
+      if (!badge) {
+        badge =
+          document.createElement('span');
+
+        badge.className =
+          'koezina-header__cart-count';
+
+        cartLink.appendChild(
+          badge
+        );
+      }
+
+      badge.textContent =
+        String(itemCount);
+    };
+
+    const renderCount = (
+      itemCount
+    ) => {
+
+      if (!count) {
+        return;
+      }
+
+      count.textContent =
+        `${itemCount} ${
+          itemCount === 1
+            ? 'artikel'
+            : 'artikelen'
+        }`;
+    };
+
+    const renderShipping = (
+      cart
+    ) => {
+
+      if (
+        !shippingText ||
+        !shippingProgress
+      ) {
+        return;
+      }
+
+      const value =
+        Number(
+          cart.items_subtotal_price || 0
+        );
+
+      const remaining =
+        Math.max(
+          threshold - value,
+          0
+        );
+
+      const progress =
+        Math.min(
+          (value / threshold) * 100,
+          100
+        );
+
+      shippingProgress.style.width =
+        `${progress}%`;
+
+      if (remaining <= 0) {
+
+        shippingText.innerHTML =
+          '<strong>Gratis verzending behaald.</strong>';
+
+      } else {
+
+        shippingText.innerHTML =
+          `Nog <strong>${escapeHtml(
+            formatMoney(remaining)
+          )}</strong> voor gratis verzending.`;
+
+      }
+
+    };
+
+    const renderDiscounts = (
+      cart
+    ) => {
+
+      if (!discounts) {
+        return;
+      }
+
+      const applications =
+        cart.cart_level_discount_applications || [];
+
+      if (applications.length === 0) {
+
+        discounts.innerHTML = '';
+        discounts.hidden = true;
+
+        return;
+      }
+
+      discounts.innerHTML =
+        applications
+          .map(
+            (discount) => `
+              <div class="koezina-cart-page__discount">
+                <span>
+                  ${escapeHtml(
+                    discount.title
+                  )}
+                </span>
+
+                <strong>
+                  −${escapeHtml(
+                    formatMoney(
+                      discount.total_allocated_amount
+                    )
+                  )}
+                </strong>
+              </div>
+            `
+          )
+          .join('');
+
+      discounts.hidden = false;
+    };
+
+    const renderSummary = (
+      cart
+    ) => {
+
+      if (subtotal) {
+        subtotal.textContent =
+          formatMoney(
+            cart.items_subtotal_price
+          );
+      }
+
+      if (total) {
+        total.textContent =
+          formatMoney(
+            cart.total_price
+          );
+      }
+
+      renderCount(
+        cart.item_count || 0
+      );
+
+      renderShipping(cart);
+      renderDiscounts(cart);
+
+      updateHeaderCount(
+        cart.item_count || 0
+      );
+    };
+
+    const renderLine = (
+      element,
+      item
+    ) => {
+
+      const input =
+        element.querySelector(
+          '[data-cart-page-quantity]'
+        );
+
+      const linePrice =
+        element.querySelector(
+          '[data-cart-page-line-price]'
+        );
+
+      const oldPrice =
+        element.querySelector(
+          '[data-cart-page-old-price]'
+        );
+
+      if (input) {
+        input.value =
+          item.quantity;
+      }
+
+      if (linePrice) {
+        linePrice.textContent =
+          formatMoney(
+            item.final_line_price
+          );
+      }
+
+      if (oldPrice) {
+
+        if (
+          item.original_line_price >
+          item.final_line_price
+        ) {
+
+          oldPrice.textContent =
+            formatMoney(
+              item.original_line_price
+            );
+
+          oldPrice.hidden = false;
+
+        } else {
+
+          oldPrice.textContent = '';
+          oldPrice.hidden = true;
+
+        }
+
+      }
+
+    };
+
+    const findCartItem = (
+      cart,
+      key
+    ) => {
+
+      return cart.items.find(
+        (item) =>
+          String(item.key) ===
+          String(key)
+      );
+
+    };
+
+    const showStatus = (
+      message
+    ) => {
+
+      if (!status) {
+        return;
+      }
+
+      status.textContent =
+        message;
+
+      window.clearTimeout(
+        showStatus.timer
+      );
+
+      showStatus.timer =
+        window.setTimeout(
+          () => {
+            status.textContent = '';
+          },
+          1600
+        );
+
+    };
+
+    const updateItem = async (
+      element,
+      quantity
+    ) => {
+
+      const key =
+        element.dataset.cartKey;
+
+      if (!key) {
+        return;
+      }
+
+      element.classList.add(
+        'is-updating'
+      );
+
+      try {
+
+        const response =
+          await fetch(
+            `${root}cart/change.js`,
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json',
+                Accept:
+                  'application/json'
+              },
+
+              body: JSON.stringify({
+                id: key,
+                quantity
+              })
+            }
+          );
+
+        if (!response.ok) {
+
+          const error =
+            await response.json();
+
+          throw new Error(
+            error.description ||
+            'Winkelmand kon niet worden aangepast.'
+          );
+
+        }
+
+        const cart =
+          await response.json();
+
+        if (cart.item_count === 0) {
+
+          window.location.reload();
+          return;
+
+        }
+
+        const updatedItem =
+          findCartItem(
+            cart,
+            key
+          );
+
+        if (!updatedItem) {
+
+          element.remove();
+
+        } else {
+
+          renderLine(
+            element,
+            updatedItem
+          );
+
+        }
+
+        renderSummary(cart);
+
+        showStatus(
+          'Winkelmand bijgewerkt'
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          error.message ||
+          'Er ging iets mis bij het bijwerken.'
+        );
+
+        window.location.reload();
+
+      } finally {
+
+        element.classList.remove(
+          'is-updating'
+        );
+
+      }
+
+    };
+
+    page
+      .querySelectorAll(
+        '[data-cart-page-item]'
+      )
+      .forEach(
+        (element) => {
+
+          const input =
+            element.querySelector(
+              '[data-cart-page-quantity]'
+            );
+
+          const minus =
+            element.querySelector(
+              '[data-cart-page-minus]'
+            );
+
+          const plus =
+            element.querySelector(
+              '[data-cart-page-plus]'
+            );
+
+          const remove =
+            element.querySelector(
+              '[data-cart-page-remove]'
+            );
+
+          minus?.addEventListener(
+            'click',
+            () => {
+
+              const current =
+                Math.max(
+                  0,
+                  parseInt(
+                    input?.value,
+                    10
+                  ) || 0
+                );
+
+              updateItem(
+                element,
+                Math.max(
+                  current - 1,
+                  0
+                )
+              );
+
+            }
+          );
+
+          plus?.addEventListener(
+            'click',
+            () => {
+
+              const current =
+                Math.max(
+                  0,
+                  parseInt(
+                    input?.value,
+                    10
+                  ) || 0
+                );
+
+              updateItem(
+                element,
+                current + 1
+              );
+
+            }
+          );
+
+          input?.addEventListener(
+            'change',
+            () => {
+
+              const quantity =
+                Math.max(
+                  0,
+                  parseInt(
+                    input.value,
+                    10
+                  ) || 0
+                );
+
+              updateItem(
+                element,
+                quantity
+              );
+
+            }
+          );
+
+          remove?.addEventListener(
+            'click',
+            () => {
+
+              updateItem(
+                element,
+                0
+              );
+
+            }
+          );
+
+        }
+      );
+
+  })();
+
+{% endjavascript %}
 
 {% schema %}
 {
-  "name": "t:general.cart",
+  "name": "Koezina cart",
   "settings": []
 }
 {% endschema %}

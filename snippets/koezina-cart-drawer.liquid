@@ -1,0 +1,118 @@
+<div
+  class="koezina-cart-drawer"
+  data-koezina-cart-drawer
+  data-free-shipping-threshold="5000"
+  aria-hidden="true"
+>
+  <div
+    class="koezina-cart-drawer__overlay"
+    data-cart-drawer-close
+  ></div>
+
+  <aside
+    class="koezina-cart-drawer__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="KoezinaCartDrawerTitle"
+    tabindex="-1"
+  >
+    <header class="koezina-cart-drawer__header">
+      <div>
+        <p class="koezina-cart-drawer__eyebrow">
+          Koezina
+        </p>
+
+        <h2 id="KoezinaCartDrawerTitle">
+          Winkelmand
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="koezina-cart-drawer__close"
+        data-cart-drawer-close
+        aria-label="Winkelmand sluiten"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6L18 18"></path>
+          <path d="M18 6L6 18"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div
+      class="koezina-cart-drawer__shipping"
+      data-cart-shipping
+    >
+      <p data-cart-shipping-text></p>
+
+      <div
+        class="koezina-cart-drawer__progress"
+        aria-hidden="true"
+      >
+        <span data-cart-shipping-progress></span>
+      </div>
+    </div>
+
+    <div
+      class="koezina-cart-drawer__body"
+      data-cart-drawer-body
+    >
+      <div class="koezina-cart-drawer__loading">
+        Winkelmand laden…
+      </div>
+    </div>
+
+    <footer
+      class="koezina-cart-drawer__footer"
+      data-cart-drawer-footer
+      hidden
+    >
+      <div class="koezina-cart-drawer__subtotal">
+        <span>Subtotaal</span>
+
+        <strong data-cart-subtotal>
+          {{ cart.total_price | money }}
+        </strong>
+      </div>
+
+      <p class="koezina-cart-drawer__tax-note">
+        Verzendkosten en eventuele kortingen worden berekend bij het afrekenen.
+      </p>
+
+      <form
+        action="{{ routes.cart_url }}"
+        method="post"
+      >
+        <button
+          type="submit"
+          name="checkout"
+          class="koezina-cart-drawer__checkout"
+        >
+          Afrekenen
+
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <path d="M14 7l5 5-5 5"></path>
+          </svg>
+        </button>
+      </form>
+
+      <a
+        href="{{ routes.cart_url }}"
+        class="koezina-cart-drawer__view-cart"
+      >
+        Bekijk winkelmand
+      </a>
+
+      <div class="koezina-cart-drawer__secure">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 10V7a5 5 0 0 1 10 0v3"></path>
+          <rect x="5" y="10" width="14" height="10" rx="1"></rect>
+        </svg>
+
+        <span>Veilig en beveiligd afrekenen</span>
+      </div>
+    </footer>
+  </aside>
+</div>

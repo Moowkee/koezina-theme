@@ -47,6 +47,7 @@ dialog {
 p {
   text-wrap: pretty;
 }
+
 p,
 h1,
 h2,
@@ -72,10 +73,19 @@ p:empty {
 }
 
 /** Theme styles below */
+
+html,
+body {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
 body {
   font-family: var(--font-primary--family);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  overflow-x: hidden;
 }
 
 /** Section layout utilities */
@@ -93,25 +103,52 @@ body {
  */
 .shopify-section {
   --content-width: min(
-    calc(var(--page-width) - var(--page-margin) * 2),
-    calc(100% - var(--page-margin) * 2)
+          calc(var(--page-width) - var(--page-margin) * 2),
+          calc(100% - var(--page-margin) * 2)
   );
-  --content-margin: minmax(var(--page-margin), 1fr);
-  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
-  /* This is required to make <img> elements work as background images */
+  --content-margin: minmax(var(--page-margin), 1fr);
+
+  --content-grid:
+          var(--content-margin)
+          var(--content-width)
+          var(--content-margin);
+
   position: relative;
-  grid-template-columns: var(--content-grid);
+
   display: grid;
+  grid-template-columns: var(--content-grid);
+
   width: 100%;
+  max-width: none;
 }
 
-/* Child elements, by default, are constrained to the central column of the grid. */
+/* Child elements are normally constrained to the central column. */
 .shopify-section > * {
   grid-column: 2;
 }
 
-/* Child elements that use the full-width utility class span the entire viewport. */
+/* Full-width utility */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/*
+ * Koezina custom sections
+ *
+ * Every top-level element whose class starts with "koezina-"
+ * spans the complete viewport.
+ *
+ * This removes the large white margins that the Skeleton theme
+ * normally adds around sections.
+ */
+.shopify-section > [class^="koezina-"],
+.shopify-section > [class*=" koezina-"] {
+  grid-column: 1 / -1;
+
+  width: 100%;
+  max-width: none;
+
+  margin-left: 0;
+  margin-right: 0;
 }

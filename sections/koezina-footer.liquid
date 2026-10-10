@@ -1,0 +1,262 @@
+<footer class="koezina-footer">
+  <div class="koezina-footer__inner">
+
+    <div class="koezina-footer__brand">
+      {% if section.settings.logo != blank %}
+        {{
+          section.settings.logo
+          | image_url: width: 300
+          | image_tag:
+            loading: 'lazy',
+            class: 'koezina-footer__logo',
+            alt: shop.name
+        }}
+      {% else %}
+        <h2>{{ shop.name }}</h2>
+      {% endif %}
+
+      <p>
+        {{ section.settings.description }}
+      </p>
+    </div>
+
+    <div class="koezina-footer__column">
+      <h3>Shop</h3>
+
+      {% if section.settings.shop_menu != blank %}
+        <ul>
+          {% for link in section.settings.shop_menu.links %}
+            <li>
+              <a href="{{ link.url }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="koezina-footer__column">
+      <h3>Information</h3>
+
+      {% if section.settings.info_menu != blank %}
+        <ul>
+          {% for link in section.settings.info_menu.links %}
+            <li>
+              <a href="{{ link.url }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="koezina-footer__column">
+      <h3>Follow Koezina</h3>
+
+      {% if section.settings.instagram != blank %}
+        <a href="{{ section.settings.instagram }}">
+          Instagram
+        </a>
+      {% endif %}
+
+      {% if section.settings.tiktok != blank %}
+        <a href="{{ section.settings.tiktok }}">
+          TikTok
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="koezina-footer__bottom">
+    <p>
+      © {{ 'now' | date: '%Y' }} Koezina. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .koezina-footer {
+    background: #2b2824;
+    color: #eee8df;
+    padding: 70px 48px 24px;
+  }
+
+  .koezina-footer__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+  }
+
+  .koezina-footer__brand {
+    max-width: 380px;
+  }
+
+  .koezina-footer__brand h2 {
+    margin: 0 0 18px;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px;
+    font-weight: 400;
+
+    color: #ffffff;
+  }
+
+  .koezina-footer__logo {
+    display: block;
+
+    max-width: 150px;
+    width: auto;
+    height: auto;
+
+    margin-bottom: 28px;
+
+    filter: brightness(0) invert(1);
+  }
+
+  .koezina-footer__brand p {
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    color: #c9c1b7;
+  }
+
+  .koezina-footer__column h3 {
+    margin: 0 0 18px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    color: #ffffff;
+  }
+
+  .koezina-footer__column ul {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .koezina-footer__column li + li {
+    margin-top: 10px;
+  }
+
+  .koezina-footer__column a {
+    display: block;
+    width: fit-content;
+
+    margin-bottom: 10px;
+
+    color: #c9c1b7;
+    text-decoration: none;
+
+    font-size: 13px;
+
+    transition: color 0.2s ease;
+  }
+
+  .koezina-footer__column a:hover {
+    color: #ffffff;
+  }
+
+  .koezina-footer__bottom {
+    max-width: 1440px;
+
+    margin: 60px auto 0;
+    padding-top: 22px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .koezina-footer__bottom p {
+    margin: 0;
+
+    font-size: 11px;
+
+    color: #9e958b;
+  }
+
+  @media screen and (max-width: 900px) {
+    .koezina-footer {
+      padding: 60px 28px 24px;
+    }
+
+    .koezina-footer__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 44px;
+    }
+  }
+
+  @media screen and (max-width: 560px) {
+    .koezina-footer {
+      padding: 54px 20px 22px;
+    }
+
+    .koezina-footer__inner {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .koezina-footer__logo {
+      max-width: 135px;
+    }
+
+    .koezina-footer__bottom {
+      margin-top: 44px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Beschrijving",
+      "default": "Thoughtful kitchen essentials designed for everyday living."
+    },
+    {
+      "type": "link_list",
+      "id": "shop_menu",
+      "label": "Shop menu"
+    },
+    {
+      "type": "link_list",
+      "id": "info_menu",
+      "label": "Informatie menu"
+    },
+    {
+      "type": "url",
+      "id": "instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "tiktok",
+      "label": "TikTok URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Koezina footer"
+    }
+  ]
+}
+{% endschema %}

@@ -1,20 +1,56 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "koezina_announcement": {
+      "type": "koezina-announcement",
+      "settings": {}
+    },
+    "koezina_header": {
+      "type": "koezina-header",
+      "settings": {}
+    },
+    "koezina_hero": {
+      "type": "koezina-hero",
+      "settings": {}
+    },
+    "koezina_usps": {
+      "type": "koezina-usps",
+      "settings": {}
+    },
+    "koezina_categories": {
+      "type": "koezina-categories",
+      "settings": {}
+    },
+    "koezina_bestsellers": {
+      "type": "koezina-bestsellers",
+      "settings": {}
+    },
+    "koezina_story": {
+      "type": "koezina-story",
+      "settings": {}
+    },
+    "koezina_collection_banner": {
+      "type": "koezina-collection-banner",
+      "settings": {}
+    },
+    "koezina_newsletter": {
+      "type": "koezina-newsletter",
+      "settings": {}
+    },
+    "koezina_footer": {
+      "type": "koezina-footer",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "koezina_announcement",
+    "koezina_header",
+    "koezina_hero",
+    "koezina_usps",
+    "koezina_categories",
+    "koezina_bestsellers",
+    "koezina_story",
+    "koezina_collection_banner",
+    "koezina_newsletter",
+    "koezina_footer"
   ]
 }

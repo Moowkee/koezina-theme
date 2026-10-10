@@ -1,52 +1,1984 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+  Koezina product page
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+  Shopify blijft verantwoordelijk voor:
+  - productdata
+  - prijzen
+  - varianten
+  - voorraad
+  - winkelmand
+  - checkout
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+{% assign current_variant = product.selected_or_first_available_variant %}
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+{% if current_variant.featured_media != blank %}
+  {% assign active_media_id = current_variant.featured_media.id %}
+{% elsif product.featured_media != blank %}
+  {% assign active_media_id = product.featured_media.id %}
+{% else %}
+  {% assign active_media_id = blank %}
+{% endif %}
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+<section
+  id="KoezinaProduct-{{ section.id }}"
+  class="koezina-product"
+  data-koezina-product
+>
+  <div class="koezina-product__container">
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
+    <div class="koezina-product__gallery">
+
+      {% if product.media.size > 0 %}
+
+        <div class="koezina-product__main-media">
+
+          {% for media in product.media %}
+            {% if media.media_type == 'image' %}
+
+              <div
+                class="koezina-product__main-image{% if media.id == active_media_id %} is-active{% endif %}"
+                data-product-media="{{ media.id }}"
+              >
+                {{
+                  media.preview_image
+                  | image_url: width: 1800
+                  | image_tag:
+                    loading: 'eager',
+                    widths: '500, 700, 900, 1200, 1500, 1800',
+                    sizes: '(max-width: 749px) 100vw, 54vw',
+                    alt: media.alt
+                }}
+              </div>
+
+            {% endif %}
+          {% endfor %}
+
+        </div>
+
+        {% if product.media.size > 1 %}
+
+          <div class="koezina-product__thumbnails">
+
+            {% for media in product.media %}
+              {% if media.media_type == 'image' %}
+
+                <button
+                  type="button"
+                  class="koezina-product__thumbnail{% if media.id == active_media_id %} is-active{% endif %}"
+                  data-product-thumbnail="{{ media.id }}"
+                  aria-label="Bekijk productafbeelding {{ forloop.index }}"
+                >
+                  {{
+                    media.preview_image
+                    | image_url: width: 220
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '80, 120, 160, 220',
+                      sizes: '78px',
+                      alt: media.alt
+                  }}
+                </button>
+
+              {% endif %}
+            {% endfor %}
+
+          </div>
+
+        {% endif %}
+
+      {% else %}
+
+        <div class="koezina-product__placeholder">
+          {{ 'product-1' | placeholder_svg_tag }}
+        </div>
+
+      {% endif %}
+
+    </div>
+
+    <div class="koezina-product__info">
+
+      <div class="koezina-product__info-inner">
+
+        {% if section.settings.eyebrow != blank %}
+          <p class="koezina-product__eyebrow">
+            {{ section.settings.eyebrow }}
+          </p>
+        {% endif %}
+
+        <h1 class="koezina-product__title">
+          {{ product.title }}
+        </h1>
+
+        <div class="koezina-product__price-row">
+
+          <span
+            class="koezina-product__price"
+            data-product-price
+          >
+            {{ current_variant.price | money }}
+          </span>
+
+          <span
+            class="koezina-product__compare-price"
+            data-product-compare-price
+            {% unless current_variant.compare_at_price > current_variant.price %}
+              hidden
+            {% endunless %}
+          >
+            {% if current_variant.compare_at_price > current_variant.price %}
+              {{ current_variant.compare_at_price | money }}
+            {% endif %}
+          </span>
+
+        </div>
+
+        {% if product.description != blank %}
+          <div class="koezina-product__intro">
+            {{ product.description }}
+          </div>
+        {% endif %}
+
+        {% form 'product', product, class: 'koezina-product__form' %}
+
+          {% unless product.has_only_default_variant %}
+
+            <div class="koezina-product__field">
+
+              <label
+                class="koezina-product__label"
+                for="Variant-{{ section.id }}"
+              >
+                Kies een optie
+              </label>
+
+              <div class="koezina-product__select-wrap">
+
+                <select
+                  id="Variant-{{ section.id }}"
+                  class="koezina-product__select"
+                  name="id"
+                  data-product-variant-select
+                >
+
+                  {% for variant in product.variants %}
+
+                    <option
+                      value="{{ variant.id }}"
+                      data-price="{{ variant.price | money | escape }}"
+                      data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}"
+                      data-available="{{ variant.available }}"
+                      data-media-id="{{ variant.featured_media.id }}"
+                      {% if variant == current_variant %}
+                        selected
+                      {% endif %}
+                    >
+                      {{ variant.title }}
+
+                      {% unless variant.available %}
+                        — Uitverkocht
+                      {% endunless %}
+                    </option>
+
+                  {% endfor %}
+
+                </select>
+
+                <svg
+                  class="koezina-product__select-icon"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path d="M5 7.5L10 12.5L15 7.5"></path>
+                </svg>
+
+              </div>
+
+            </div>
+
+          {% else %}
+
+            <input
+              type="hidden"
+              name="id"
+              value="{{ current_variant.id }}"
+            >
+
+          {% endunless %}
+
+          <div class="koezina-product__availability">
+
+            <span
+              class="koezina-product__availability-dot{% unless current_variant.available %} is-unavailable{% endunless %}"
+              data-product-availability-dot
+            ></span>
+
+            <span data-product-availability>
+
+              {% if current_variant.available %}
+                Op voorraad
+              {% else %}
+                Momenteel uitverkocht
+              {% endif %}
+
+            </span>
+
+          </div>
+
+          <div class="koezina-product__purchase-row">
+
+            <div class="koezina-product__quantity">
+
+              <button
+                type="button"
+                class="koezina-product__quantity-button"
+                data-quantity-minus
+                aria-label="Aantal verlagen"
+              >
+                −
+              </button>
+
+              <input
+                class="koezina-product__quantity-input"
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                inputmode="numeric"
+                aria-label="Aantal"
+                data-quantity-input
+              >
+
+              <button
+                type="button"
+                class="koezina-product__quantity-button"
+                data-quantity-plus
+                aria-label="Aantal verhogen"
+              >
+                +
+              </button>
+
+            </div>
+
+            <button
+              type="submit"
+              name="add"
+              class="koezina-product__add-button"
+              data-product-submit
+              {% unless current_variant.available %}
+                disabled
+              {% endunless %}
+            >
+
+              <span data-product-submit-text>
+
+                {% if current_variant.available %}
+                  In winkelmand
+                {% else %}
+                  Uitverkocht
+                {% endif %}
+
+              </span>
+
+            </button>
+
+          </div>
+
+          {% if section.settings.show_dynamic_checkout %}
+
+            <div class="koezina-product__dynamic-checkout">
+              {{ form | payment_button }}
+            </div>
+
           {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
 
-    <input type="text" name="quantity" min="1" value="1">
+        {% endform %}
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+        <div class="koezina-product__trust">
+
+          <div class="koezina-product__trust-item">
+
+            <span class="koezina-product__trust-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 10V7a5 5 0 0 1 10 0v3"></path>
+                <rect x="5" y="10" width="14" height="10" rx="1"></rect>
+                <path d="M12 14v2"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>Veilig betalen</strong>
+              <small>Beveiligde checkout</small>
+            </span>
+
+          </div>
+
+          <div class="koezina-product__trust-item">
+
+            <span class="koezina-product__trust-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 7h11v10H3z"></path>
+                <path d="M14 10h4l3 3v4h-7z"></path>
+                <circle cx="7" cy="18" r="2"></circle>
+                <circle cx="18" cy="18" r="2"></circle>
+              </svg>
+            </span>
+
+            <span>
+              <strong>{{ section.settings.shipping_title }}</strong>
+              <small>{{ section.settings.shipping_text }}</small>
+            </span>
+
+          </div>
+
+          <div class="koezina-product__trust-item">
+
+            <span class="koezina-product__trust-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 12a8 8 0 1 0 2-5.3"></path>
+                <path d="M4 4v6h6"></path>
+              </svg>
+            </span>
+
+            <span>
+              <strong>{{ section.settings.return_title }}</strong>
+              <small>{{ section.settings.return_text }}</small>
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="koezina-product__accordions">
+
+          {% if section.settings.materials != blank %}
+
+            <details class="koezina-product__accordion">
+
+              <summary>
+                <span>Materiaal & details</span>
+                <span class="koezina-product__accordion-plus">+</span>
+              </summary>
+
+              <div class="koezina-product__accordion-content">
+                {{ section.settings.materials }}
+              </div>
+
+            </details>
+
+          {% endif %}
+
+          {% if section.settings.care != blank %}
+
+            <details class="koezina-product__accordion">
+
+              <summary>
+                <span>Onderhoud</span>
+                <span class="koezina-product__accordion-plus">+</span>
+              </summary>
+
+              <div class="koezina-product__accordion-content">
+                {{ section.settings.care }}
+              </div>
+
+            </details>
+
+          {% endif %}
+
+          {% if section.settings.delivery != blank %}
+
+            <details class="koezina-product__accordion">
+
+              <summary>
+                <span>Verzending & retourneren</span>
+                <span class="koezina-product__accordion-plus">+</span>
+              </summary>
+
+              <div class="koezina-product__accordion-content">
+                {{ section.settings.delivery }}
+              </div>
+
+            </details>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  {% if
+    section.settings.editorial_image != blank
+    or section.settings.editorial_title != blank
+  %}
+
+    <div class="koezina-product-editorial">
+
+      <div class="koezina-product-editorial__inner">
+
+        <div class="koezina-product-editorial__media">
+
+          {% if section.settings.editorial_image != blank %}
+
+            {{
+              section.settings.editorial_image
+              | image_url: width: 1800
+              | image_tag:
+                loading: 'lazy',
+                widths: '600, 900, 1200, 1500, 1800',
+                sizes: '(max-width: 749px) 100vw, 55vw',
+                alt: section.settings.editorial_title
+            }}
+
+          {% else %}
+
+            {{ 'lifestyle-1' | placeholder_svg_tag }}
+
+          {% endif %}
+
+        </div>
+
+        <div class="koezina-product-editorial__content">
+
+          {% if section.settings.editorial_eyebrow != blank %}
+            <p class="koezina-product-editorial__eyebrow">
+              {{ section.settings.editorial_eyebrow }}
+            </p>
+          {% endif %}
+
+          {% if section.settings.editorial_title != blank %}
+            <h2>
+              {{ section.settings.editorial_title }}
+            </h2>
+          {% endif %}
+
+          {% if section.settings.editorial_text != blank %}
+            <div class="koezina-product-editorial__text">
+              {{ section.settings.editorial_text }}
+            </div>
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  {% endif %}
+
+  <div class="koezina-product-values">
+
+    <div class="koezina-product-values__inner">
+
+      <div class="koezina-product-values__item">
+
+        <span class="koezina-product-values__number">
+          01
+        </span>
+
+        <h3>
+          {{ section.settings.value_one_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_one_text }}
+        </p>
+
+      </div>
+
+      <div class="koezina-product-values__item">
+
+        <span class="koezina-product-values__number">
+          02
+        </span>
+
+        <h3>
+          {{ section.settings.value_two_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_two_text }}
+        </p>
+
+      </div>
+
+      <div class="koezina-product-values__item">
+
+        <span class="koezina-product-values__number">
+          03
+        </span>
+
+        <h3>
+          {{ section.settings.value_three_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_three_text }}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% stylesheet %}
+
+  .koezina-product {
+    width: 100%;
+
+    background: #fffdf9;
+    color: #29261f;
+  }
+
+  .koezina-product__container {
+    width: 100%;
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.08fr)
+      minmax(400px, .92fr);
+  }
+
+  /* =========================================
+     GALLERY
+  ========================================== */
+
+  .koezina-product__gallery {
+    min-width: 0;
+
+    padding:
+      48px
+      28px
+      88px
+      48px;
+  }
+
+  .koezina-product__main-media {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    overflow: hidden;
+
+    background: #f3f0eb;
+  }
+
+  .koezina-product__main-image {
+    display: none;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .koezina-product__main-image.is-active {
+    display: block;
+  }
+
+  .koezina-product__main-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .koezina-product__placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    background: #f3f0eb;
+  }
+
+  .koezina-product__placeholder svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .koezina-product__thumbnails {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+  }
+
+  .koezina-product__thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+
+  .koezina-product__thumbnail {
+    flex: 0 0 78px;
+
+    width: 78px;
+    height: 78px;
+
+    padding: 0;
+
+    border: 1px solid transparent;
+
+    overflow: hidden;
+
+    background: #f3f0eb;
+
+    cursor: pointer;
+
+    opacity: .6;
+
+    transition:
+      opacity .2s ease,
+      border-color .2s ease;
+  }
+
+  .koezina-product__thumbnail:hover,
+  .koezina-product__thumbnail.is-active {
+    opacity: 1;
+  }
+
+  .koezina-product__thumbnail.is-active {
+    border-color: #29261f;
+  }
+
+  .koezina-product__thumbnail img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  /* =========================================
+     PRODUCT INFO
+  ========================================== */
+
+  .koezina-product__info {
+    min-width: 0;
+
+    padding:
+      86px
+      64px
+      90px
+      58px;
+  }
+
+  .koezina-product__info-inner {
+    position: sticky;
+    top: 100px;
+
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .koezina-product__eyebrow {
+    margin: 0 0 18px;
+
+    color: #aa8b68;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-product__title {
+    max-width: 500px;
+
+    margin: 0;
+
+    color: #29261f;
+
+    font-family:
+      Georgia,
+      'Times New Roman',
+      serif;
+
+    font-size:
+      clamp(
+        38px,
+        4vw,
+        55px
+      );
+
+    font-weight: 400;
+    line-height: 1.02;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-product__price-row {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 24px;
+  }
+
+  .koezina-product__price {
+    color: #29261f;
+
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .koezina-product__compare-price {
+    color: #978e84;
+
+    font-size: 14px;
+
+    text-decoration: line-through;
+  }
+
+  .koezina-product__intro {
+    max-width: 480px;
+
+    margin-top: 26px;
+    margin-bottom: 6px;
+
+    color: #69635c;
+
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .koezina-product__intro p:first-child {
+    margin-top: 0;
+  }
+
+  .koezina-product__intro p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* =========================================
+     FORM
+  ========================================== */
+
+  .koezina-product__form {
+    margin-top: 32px;
+  }
+
+  .koezina-product__field {
+    margin-bottom: 20px;
+  }
+
+  .koezina-product__label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #29261f;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    letter-spacing: .03em;
+  }
+
+  .koezina-product__select-wrap {
+    position: relative;
+  }
+
+  .koezina-product__select {
+    appearance: none;
+
+    width: 100%;
+
+    padding:
+      15px
+      48px
+      15px
+      16px;
+
+    border:
+      1px
+      solid
+      #ded7ce;
+
+    border-radius: 0;
+
+    background: transparent;
+    color: #29261f;
+
+    font: inherit;
+    font-size: 13px;
+
+    cursor: pointer;
+  }
+
+  .koezina-product__select:focus {
+    outline:
+      1px
+      solid
+      #29261f;
+
+    outline-offset: 2px;
+  }
+
+  .koezina-product__select-icon {
+    position: absolute;
+
+    top: 50%;
+    right: 16px;
+
+    width: 15px;
+    height: 15px;
+
+    transform:
+      translateY(-50%);
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+
+    pointer-events: none;
+  }
+
+  .koezina-product__availability {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin:
+      24px
+      0
+      20px;
+
+    color: #756e66;
+
+    font-size: 11px;
+  }
+
+  .koezina-product__availability-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #778b6c;
+  }
+
+  .koezina-product__availability-dot.is-unavailable {
+    background: #a89f95;
+  }
+
+  .koezina-product__purchase-row {
+    display: grid;
+
+    grid-template-columns:
+      120px
+      minmax(0, 1fr);
+
+    gap: 12px;
+  }
+
+  .koezina-product__quantity {
+    height: 54px;
+
+    display: grid;
+
+    grid-template-columns:
+      38px
+      1fr
+      38px;
+
+    border:
+      1px
+      solid
+      #ded7ce;
+  }
+
+  .koezina-product__quantity-button {
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: #29261f;
+
+    font-size: 19px;
+
+    cursor: pointer;
+  }
+
+  .koezina-product__quantity-input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0;
+
+    border: 0;
+    outline: none;
+
+    background: transparent;
+    color: #29261f;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    appearance: textfield;
+  }
+
+  .koezina-product__quantity-input::-webkit-inner-spin-button,
+  .koezina-product__quantity-input::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  .koezina-product__add-button {
+    width: 100%;
+    height: 54px;
+
+    padding:
+      0
+      28px;
+
+    border:
+      1px
+      solid
+      #29261f;
+
+    background: #29261f;
+    color: #fffdf9;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: .12em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+      background .2s ease,
+      color .2s ease,
+      opacity .2s ease;
+  }
+
+  .koezina-product__add-button:hover:not(:disabled) {
+    background: transparent;
+    color: #29261f;
+  }
+
+  .koezina-product__add-button:disabled {
+    cursor: not-allowed;
+    opacity: .4;
+  }
+
+  .koezina-product__dynamic-checkout {
+    margin-top: 10px;
+  }
+
+  /* =========================================
+     TRUST
+  ========================================== */
+
+  .koezina-product__trust {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin-top: 28px;
+
+    padding: 0;
+
+    border: 0;
+  }
+
+  .koezina-product__trust-item {
+    min-width: 0;
+    min-height: 105px;
+
+    padding:
+      18px
+      14px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    background: #f5f1eb;
+
+    color: #676159;
+  }
+
+  .koezina-product__trust-icon {
+    flex: 0 0 auto;
+
+    width: 22px;
+    height: 22px;
+
+    color: #b89a73;
+  }
+
+  .koezina-product__trust-icon svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .koezina-product__trust-item span:last-child {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+  }
+
+  .koezina-product__trust-item strong {
+    color: #29261f;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    line-height: 1.3;
+  }
+
+  .koezina-product__trust-item small {
+    color: #81796f;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+  }
+
+  /* =========================================
+     ACCORDIONS
+  ========================================== */
+
+  .koezina-product__accordions {
+    margin-top: 15px;
+  }
+
+  .koezina-product__accordion {
+    border-bottom:
+      1px
+      solid
+      #e8e1d8;
+  }
+
+  .koezina-product__accordion summary {
+    min-height: 61px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    color: #36322e;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    list-style: none;
+
+    cursor: pointer;
+  }
+
+  .koezina-product__accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .koezina-product__accordion-plus {
+    font-size: 18px;
+    font-weight: 300;
+
+    transition:
+      transform .25s ease;
+  }
+
+  .koezina-product__accordion[open]
+    .koezina-product__accordion-plus {
+    transform:
+      rotate(45deg);
+  }
+
+  .koezina-product__accordion-content {
+    padding:
+      0
+      34px
+      25px
+      0;
+
+    color: #716a62;
+
+    font-size: 12px;
+    line-height: 1.75;
+  }
+
+  .koezina-product__accordion-content p:first-child {
+    margin-top: 0;
+  }
+
+  /* =========================================
+     EDITORIAL SECTION
+  ========================================== */
+
+  .koezina-product-editorial {
+    width: 100%;
+
+    background: #eee7dd;
+  }
+
+  .koezina-product-editorial__inner {
+    width: 100%;
+    min-height: 650px;
+
+    display: grid;
+
+    grid-template-columns:
+      1.15fr
+      .85fr;
+  }
+
+  .koezina-product-editorial__media {
+    min-height: 650px;
+
+    overflow: hidden;
+
+    background: #e5ded5;
+  }
+
+  .koezina-product-editorial__media img,
+  .koezina-product-editorial__media svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .koezina-product-editorial__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding:
+      90px
+      clamp(
+        48px,
+        7vw,
+        120px
+      );
+
+    color: #29261f;
+  }
+
+  .koezina-product-editorial__eyebrow {
+    margin: 0 0 19px;
+
+    color: #9b8064;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    letter-spacing: .21em;
+    text-transform: uppercase;
+  }
+
+  .koezina-product-editorial__content h2 {
+    max-width: 470px;
+
+    margin: 0;
+
+    font-family:
+      Georgia,
+      'Times New Roman',
+      serif;
+
+    font-size:
+      clamp(
+        38px,
+        4vw,
+        58px
+      );
+
+    font-weight: 400;
+    line-height: 1.02;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-product-editorial__text {
+    max-width: 440px;
+
+    margin-top: 28px;
+
+    color: #69625a;
+
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* =========================================
+     VALUES
+  ========================================== */
+
+  .koezina-product-values {
+    width: 100%;
+
+    background: #fffdf9;
+
+    padding:
+      88px
+      48px
+      96px;
+  }
+
+  .koezina-product-values__inner {
+    width: 100%;
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .koezina-product-values__item {
+    padding:
+      0
+      46px;
+
+    border-right:
+      1px
+      solid
+      #e6dfd6;
+  }
+
+  .koezina-product-values__item:first-child {
+    padding-left: 0;
+  }
+
+  .koezina-product-values__item:last-child {
+    padding-right: 0;
+
+    border-right: 0;
+  }
+
+  .koezina-product-values__number {
+    display: block;
+
+    margin-bottom: 23px;
+
+    color: #b89a73;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .18em;
+  }
+
+  .koezina-product-values__item h3 {
+    margin:
+      0
+      0
+      13px;
+
+    font-family:
+      Georgia,
+      'Times New Roman',
+      serif;
+
+    font-size: 25px;
+    font-weight: 400;
+
+    line-height: 1.15;
+  }
+
+  .koezina-product-values__item p {
+    max-width: 300px;
+
+    margin: 0;
+
+    color: #777067;
+
+    font-size: 12px;
+    line-height: 1.75;
+  }
+
+  /* =========================================
+     TABLET
+  ========================================== */
+
+  @media screen and (max-width: 1000px) {
+
+    .koezina-product__container {
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(360px, .85fr);
+    }
+
+    .koezina-product__gallery {
+      padding:
+        32px
+        18px
+        64px
+        28px;
+    }
+
+    .koezina-product__info {
+      padding:
+        58px
+        28px
+        70px
+        30px;
+    }
+
+    .koezina-product-editorial__inner {
+      grid-template-columns:
+        1fr
+        1fr;
+    }
+
+    .koezina-product-values__item {
+      padding:
+        0
+        28px;
+    }
+  }
+
+  /* =========================================
+     MOBILE
+  ========================================== */
+
+  @media screen and (max-width: 749px) {
+
+    .koezina-product__container {
+      display: block;
+    }
+
+    .koezina-product__gallery {
+      padding: 0;
+    }
+
+    .koezina-product__main-media {
+      aspect-ratio:
+        1 / 1.04;
+    }
+
+    .koezina-product__thumbnails {
+      margin-top: 10px;
+
+      padding:
+        0
+        16px;
+    }
+
+    .koezina-product__thumbnail {
+      flex-basis: 68px;
+
+      width: 68px;
+      height: 68px;
+    }
+
+    .koezina-product__info {
+      padding:
+        42px
+        20px
+        66px;
+    }
+
+    .koezina-product__info-inner {
+      position: static;
+
+      max-width: none;
+    }
+
+    .koezina-product__title {
+      font-size: 38px;
+    }
+
+    .koezina-product__intro {
+      margin-top: 24px;
+    }
+
+    .koezina-product__purchase-row {
+      grid-template-columns:
+        108px
+        minmax(0, 1fr);
+    }
+
+    .koezina-product__trust {
+      grid-template-columns: 1fr;
+
+      gap: 8px;
+
+      margin-top: 25px;
+    }
+
+    .koezina-product__trust-item {
+      min-height: auto;
+
+      padding: 16px;
+
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .koezina-product__trust-icon {
+      width: 21px;
+      height: 21px;
+    }
+
+    .koezina-product-editorial__inner {
+      display: block;
+    }
+
+    .koezina-product-editorial__media {
+      min-height: 420px;
+
+      aspect-ratio:
+        1 / 1;
+    }
+
+    .koezina-product-editorial__content {
+      padding:
+        60px
+        22px
+        68px;
+    }
+
+    .koezina-product-editorial__content h2 {
+      font-size: 40px;
+    }
+
+    .koezina-product-values {
+      padding:
+        66px
+        22px;
+    }
+
+    .koezina-product-values__inner {
+      display: block;
+    }
+
+    .koezina-product-values__item,
+    .koezina-product-values__item:first-child,
+    .koezina-product-values__item:last-child {
+      padding:
+        30px
+        0;
+
+      border-right: 0;
+
+      border-bottom:
+        1px
+        solid
+        #e6dfd6;
+    }
+
+    .koezina-product-values__item:first-child {
+      padding-top: 0;
+    }
+
+    .koezina-product-values__item:last-child {
+      padding-bottom: 0;
+
+      border-bottom: 0;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+
+    .koezina-product__purchase-row {
+      grid-template-columns: 1fr;
+    }
+
+    .koezina-product__quantity {
+      width: 120px;
+    }
+  }
+
+{% endstylesheet %}
+
+{% javascript %}
+
+  (() => {
+
+    const SELECTOR =
+      '[data-koezina-product]';
+
+    const initProduct = (section) => {
+
+      if (
+        !section ||
+        section.dataset.koezinaProductInitialized === 'true'
+      ) {
+        return;
+      }
+
+      section.dataset.koezinaProductInitialized =
+        'true';
+
+      const thumbnails =
+        Array.from(
+          section.querySelectorAll(
+            '[data-product-thumbnail]'
+          )
+        );
+
+      const mediaItems =
+        Array.from(
+          section.querySelectorAll(
+            '[data-product-media]'
+          )
+        );
+
+      const variantSelect =
+        section.querySelector(
+          '[data-product-variant-select]'
+        );
+
+      const price =
+        section.querySelector(
+          '[data-product-price]'
+        );
+
+      const comparePrice =
+        section.querySelector(
+          '[data-product-compare-price]'
+        );
+
+      const availability =
+        section.querySelector(
+          '[data-product-availability]'
+        );
+
+      const availabilityDot =
+        section.querySelector(
+          '[data-product-availability-dot]'
+        );
+
+      const submit =
+        section.querySelector(
+          '[data-product-submit]'
+        );
+
+      const submitText =
+        section.querySelector(
+          '[data-product-submit-text]'
+        );
+
+      const quantityInput =
+        section.querySelector(
+          '[data-quantity-input]'
+        );
+
+      const minus =
+        section.querySelector(
+          '[data-quantity-minus]'
+        );
+
+      const plus =
+        section.querySelector(
+          '[data-quantity-plus]'
+        );
+
+      const showMedia = (
+        mediaId
+      ) => {
+
+        if (!mediaId) {
+          return;
+        }
+
+        mediaItems.forEach(
+          (item) => {
+
+            item.classList.toggle(
+              'is-active',
+              item.dataset.productMedia ===
+                String(mediaId)
+            );
+
+          }
+        );
+
+        thumbnails.forEach(
+          (thumbnail) => {
+
+            thumbnail.classList.toggle(
+              'is-active',
+              thumbnail.dataset.productThumbnail ===
+                String(mediaId)
+            );
+
+          }
+        );
+      };
+
+      thumbnails.forEach(
+        (thumbnail) => {
+
+          thumbnail.addEventListener(
+            'click',
+            () => {
+
+              showMedia(
+                thumbnail.dataset.productThumbnail
+              );
+
+            }
+          );
+
+        }
+      );
+
+      if (variantSelect) {
+
+        variantSelect.addEventListener(
+          'change',
+          () => {
+
+            const option =
+              variantSelect.options[
+                variantSelect.selectedIndex
+              ];
+
+            if (!option) {
+              return;
+            }
+
+            if (price) {
+              price.textContent =
+                option.dataset.price || '';
+            }
+
+            if (comparePrice) {
+
+              const value =
+                option.dataset.comparePrice || '';
+
+              comparePrice.textContent =
+                value;
+
+              comparePrice.hidden =
+                !value;
+            }
+
+            const isAvailable =
+              option.dataset.available ===
+              'true';
+
+            if (availability) {
+
+              availability.textContent =
+                isAvailable
+                  ? 'Op voorraad'
+                  : 'Momenteel uitverkocht';
+
+            }
+
+            if (availabilityDot) {
+
+              availabilityDot.classList.toggle(
+                'is-unavailable',
+                !isAvailable
+              );
+
+            }
+
+            if (submit) {
+              submit.disabled =
+                !isAvailable;
+            }
+
+            if (submitText) {
+
+              submitText.textContent =
+                isAvailable
+                  ? 'In winkelmand'
+                  : 'Uitverkocht';
+
+            }
+
+            const mediaId =
+              option.dataset.mediaId;
+
+            if (mediaId) {
+              showMedia(mediaId);
+            }
+
+          }
+        );
+      }
+
+      if (
+        minus &&
+        quantityInput
+      ) {
+
+        minus.addEventListener(
+          'click',
+          () => {
+
+            const current =
+              Math.max(
+                1,
+                parseInt(
+                  quantityInput.value,
+                  10
+                ) || 1
+              );
+
+            quantityInput.value =
+              Math.max(
+                1,
+                current - 1
+              );
+
+          }
+        );
+      }
+
+      if (
+        plus &&
+        quantityInput
+      ) {
+
+        plus.addEventListener(
+          'click',
+          () => {
+
+            const current =
+              Math.max(
+                1,
+                parseInt(
+                  quantityInput.value,
+                  10
+                ) || 1
+              );
+
+            quantityInput.value =
+              current + 1;
+
+          }
+        );
+      }
+
+    };
+
+    const initAll = (
+      root = document
+    ) => {
+
+      if (
+        root.matches?.(
+          SELECTOR
+        )
+      ) {
+        initProduct(root);
+      }
+
+      root
+        .querySelectorAll?.(
+          SELECTOR
+        )
+        .forEach(
+          initProduct
+        );
+
+    };
+
+    if (
+      document.readyState ===
+      'loading'
+    ) {
+
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => initAll()
+      );
+
+    } else {
+
+      initAll();
+
+    }
+
+    document.addEventListener(
+      'shopify:section:load',
+      (event) => {
+
+        initAll(
+          event.target
+        );
+
+      }
+    );
+
+  })();
+
+{% endjavascript %}
 
 {% schema %}
 {
-  "name": "t:general.product",
-  "settings": [],
+  "name": "Koezina product",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Tekst boven productnaam",
+      "default": "Koezina essentials"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Toon knop voor direct afrekenen",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shipping_title",
+      "label": "Titel verzending",
+      "default": "Verzending"
+    },
+    {
+      "type": "text",
+      "id": "shipping_text",
+      "label": "Tekst verzending",
+      "default": "Gratis vanaf €50"
+    },
+    {
+      "type": "text",
+      "id": "return_title",
+      "label": "Titel retourneren",
+      "default": "Eenvoudig retourneren"
+    },
+    {
+      "type": "text",
+      "id": "return_text",
+      "label": "Tekst retourneren",
+      "default": "Binnen 14 dagen"
+    },
+    {
+      "type": "richtext",
+      "id": "materials",
+      "label": "Materiaal & details",
+      "default": "<p>Voeg hier materiaal, afmetingen en andere productdetails toe.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "care",
+      "label": "Onderhoud",
+      "default": "<p>Voeg hier de onderhoudsinstructies voor dit product toe.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "delivery",
+      "label": "Verzending & retourneren",
+      "default": "<p>Voeg hier informatie over verzending en retourneren toe.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Editorial sectie"
+    },
+    {
+      "type": "image_picker",
+      "id": "editorial_image",
+      "label": "Lifestyle afbeelding"
+    },
+    {
+      "type": "text",
+      "id": "editorial_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Made for everyday living"
+    },
+    {
+      "type": "text",
+      "id": "editorial_title",
+      "label": "Titel",
+      "default": "Thoughtful details for the heart of your home"
+    },
+    {
+      "type": "richtext",
+      "id": "editorial_text",
+      "label": "Tekst",
+      "default": "<p>Koezina combineert dagelijks gebruiksgemak met een rustige, tijdloze uitstraling. Ontworpen om gezien én gebruikt te worden.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Productwaarden"
+    },
+    {
+      "type": "text",
+      "id": "value_one_title",
+      "label": "Waarde 1 titel",
+      "default": "Thoughtful design"
+    },
+    {
+      "type": "textarea",
+      "id": "value_one_text",
+      "label": "Waarde 1 tekst",
+      "default": "Eenvoudige vormen en praktische details voor dagelijks gebruik."
+    },
+    {
+      "type": "text",
+      "id": "value_two_title",
+      "label": "Waarde 2 titel",
+      "default": "Made to be used"
+    },
+    {
+      "type": "textarea",
+      "id": "value_two_text",
+      "label": "Waarde 2 tekst",
+      "default": "Keukenproducten die niet alleen mooi staan, maar onderdeel worden van je dagelijkse routine."
+    },
+    {
+      "type": "text",
+      "id": "value_three_title",
+      "label": "Waarde 3 titel",
+      "default": "Timeless at home"
+    },
+    {
+      "type": "textarea",
+      "id": "value_three_text",
+      "label": "Waarde 3 tekst",
+      "default": "Een rustige uitstraling die past in verschillende keukens en interieurs."
+    }
+  ],
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   }
 }
 {% endschema %}

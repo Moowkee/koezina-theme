@@ -1,0 +1,1112 @@
+{% comment %}
+  Koezina About page
+{% endcomment %}
+
+<section
+  id="KoezinaAbout-{{ section.id }}"
+  class="koezina-about"
+>
+
+  <!-- ======================================
+       HERO
+  ======================================= -->
+
+  <div class="koezina-about__hero">
+
+    <div class="koezina-about__hero-content">
+
+      {% if section.settings.hero_eyebrow != blank %}
+        <p class="koezina-about__eyebrow">
+          {{ section.settings.hero_eyebrow }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.hero_heading != blank %}
+        <h1>
+          {{ section.settings.hero_heading }}
+        </h1>
+      {% endif %}
+
+      {% if section.settings.hero_text != blank %}
+        <div class="koezina-about__hero-text rte">
+          {{ section.settings.hero_text }}
+        </div>
+      {% endif %}
+
+    </div>
+
+    <div class="koezina-about__hero-media">
+
+      {% if section.settings.hero_image != blank %}
+
+        {{
+          section.settings.hero_image
+          | image_url: width: 2000
+          | image_tag:
+            loading: 'eager',
+            widths: '600, 900, 1200, 1500, 1800, 2000',
+            sizes: '(max-width: 749px) 100vw, 55vw',
+            alt: section.settings.hero_heading
+        }}
+
+      {% else %}
+
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'koezina-about__placeholder' }}
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+       INTRO
+  ======================================= -->
+
+  <div class="koezina-about__intro">
+
+    <div class="koezina-about__intro-inner">
+
+      {% if section.settings.intro_eyebrow != blank %}
+        <p class="koezina-about__eyebrow">
+          {{ section.settings.intro_eyebrow }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.intro_heading != blank %}
+        <h2>
+          {{ section.settings.intro_heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.intro_text != blank %}
+        <div class="koezina-about__intro-text rte">
+          {{ section.settings.intro_text }}
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+       STORY
+  ======================================= -->
+
+  <div class="koezina-about__story">
+
+    <div class="koezina-about__story-media">
+
+      {% if section.settings.story_image != blank %}
+
+        {{
+          section.settings.story_image
+          | image_url: width: 1800
+          | image_tag:
+            loading: 'lazy',
+            widths: '500, 700, 900, 1200, 1500, 1800',
+            sizes: '(max-width: 749px) 100vw, 50vw',
+            alt: section.settings.story_heading
+        }}
+
+      {% else %}
+
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'koezina-about__placeholder' }}
+
+      {% endif %}
+
+    </div>
+
+    <div class="koezina-about__story-content">
+
+      {% if section.settings.story_eyebrow != blank %}
+        <p class="koezina-about__eyebrow">
+          {{ section.settings.story_eyebrow }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.story_heading != blank %}
+        <h2>
+          {{ section.settings.story_heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.story_text != blank %}
+        <div class="koezina-about__story-text rte">
+          {{ section.settings.story_text }}
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+       VALUES
+  ======================================= -->
+
+  <div class="koezina-about__values">
+
+    <div class="koezina-about__values-heading">
+
+      <p class="koezina-about__eyebrow">
+        {{ section.settings.values_eyebrow }}
+      </p>
+
+      <h2>
+        {{ section.settings.values_heading }}
+      </h2>
+
+    </div>
+
+    <div class="koezina-about__values-grid">
+
+      <article class="koezina-about-value">
+
+        <span class="koezina-about-value__number">
+          01
+        </span>
+
+        <h3>
+          {{ section.settings.value_one_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_one_text }}
+        </p>
+
+      </article>
+
+      <article class="koezina-about-value">
+
+        <span class="koezina-about-value__number">
+          02
+        </span>
+
+        <h3>
+          {{ section.settings.value_two_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_two_text }}
+        </p>
+
+      </article>
+
+      <article class="koezina-about-value">
+
+        <span class="koezina-about-value__number">
+          03
+        </span>
+
+        <h3>
+          {{ section.settings.value_three_title }}
+        </h3>
+
+        <p>
+          {{ section.settings.value_three_text }}
+        </p>
+
+      </article>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+       BRAND STATEMENT
+  ======================================= -->
+
+  <div class="koezina-about__statement">
+
+    <div class="koezina-about__statement-inner">
+
+      {% if section.settings.statement_eyebrow != blank %}
+        <p>
+          {{ section.settings.statement_eyebrow }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.statement_heading != blank %}
+        <h2>
+          {{ section.settings.statement_heading }}
+        </h2>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <!-- ======================================
+       CTA
+  ======================================= -->
+
+  <div class="koezina-about__cta">
+
+    <div class="koezina-about__cta-inner">
+
+      <div>
+
+        {% if section.settings.cta_eyebrow != blank %}
+          <p class="koezina-about__eyebrow">
+            {{ section.settings.cta_eyebrow }}
+          </p>
+        {% endif %}
+
+        {% if section.settings.cta_heading != blank %}
+          <h2>
+            {{ section.settings.cta_heading }}
+          </h2>
+        {% endif %}
+
+      </div>
+
+      <a
+        href="{{ routes.all_products_collection_url }}"
+        class="koezina-about__cta-button"
+      >
+        {{ section.settings.cta_button_label }}
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="M5 12H19"></path>
+          <path d="M14 7L19 12L14 17"></path>
+        </svg>
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% stylesheet %}
+
+  .koezina-about,
+  .koezina-about *,
+  .koezina-about *::before,
+  .koezina-about *::after {
+    box-sizing: border-box;
+  }
+
+  .koezina-about {
+    width: 100%;
+
+    background: #fffdf9;
+    color: #29261f;
+  }
+
+  /* =========================================
+     GLOBAL
+  ========================================== */
+
+  .koezina-about__eyebrow {
+    margin: 0 0 17px;
+
+    color: #a48666;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-about .rte p:first-child {
+    margin-top: 0;
+  }
+
+  .koezina-about .rte p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* =========================================
+     HERO
+  ========================================== */
+
+  .koezina-about__hero {
+    width: 100%;
+    min-height: 650px;
+
+    display: grid;
+
+    grid-template-columns:
+      .9fr
+      1.1fr;
+
+    background: #eee7dd;
+  }
+
+  .koezina-about__hero-content {
+    padding:
+      90px
+      clamp(48px, 7vw, 115px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .koezina-about__hero-content h1 {
+    max-width: 620px;
+
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(54px, 6.3vw, 86px);
+    font-weight: 400;
+    line-height: .95;
+
+    letter-spacing: -.045em;
+  }
+
+  .koezina-about__hero-text {
+    max-width: 500px;
+
+    margin-top: 29px;
+
+    color: #686159;
+
+    font-size: 14px;
+    line-height: 1.85;
+  }
+
+  .koezina-about__hero-media {
+    min-height: 650px;
+
+    overflow: hidden;
+
+    background: #e5ded5;
+  }
+
+  .koezina-about__hero-media img,
+  .koezina-about__hero-media svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  /* =========================================
+     INTRO
+  ========================================== */
+
+  .koezina-about__intro {
+    padding:
+      120px
+      48px
+      125px;
+
+    background: #fffdf9;
+  }
+
+  .koezina-about__intro-inner {
+    width: 100%;
+    max-width: 1040px;
+
+    margin: 0 auto;
+
+    text-align: center;
+  }
+
+  .koezina-about__intro h2 {
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 400;
+    line-height: 1.03;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-about__intro-text {
+    max-width: 660px;
+
+    margin:
+      30px
+      auto
+      0;
+
+    color: #777067;
+
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  /* =========================================
+     STORY
+  ========================================== */
+
+  .koezina-about__story {
+    width: 100%;
+    min-height: 650px;
+
+    display: grid;
+
+    grid-template-columns:
+      1.1fr
+      .9fr;
+
+    background: #eee7dd;
+  }
+
+  .koezina-about__story-media {
+    min-height: 650px;
+
+    overflow: hidden;
+
+    background: #e2dbd2;
+  }
+
+  .koezina-about__story-media img,
+  .koezina-about__story-media svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .koezina-about__story-content {
+    padding:
+      90px
+      clamp(48px, 7vw, 110px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .koezina-about__story-content h2 {
+    max-width: 520px;
+
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(40px, 4.5vw, 62px);
+    font-weight: 400;
+    line-height: 1.02;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-about__story-text {
+    max-width: 490px;
+
+    margin-top: 27px;
+
+    color: #69625a;
+
+    font-size: 14px;
+    line-height: 1.85;
+  }
+
+  /* =========================================
+     VALUES
+  ========================================== */
+
+  .koezina-about__values {
+    width: 100%;
+
+    max-width: 1450px;
+
+    margin: 0 auto;
+
+    padding:
+      110px
+      48px
+      120px;
+  }
+
+  .koezina-about__values-heading {
+    max-width: 700px;
+
+    margin-bottom: 68px;
+  }
+
+  .koezina-about__values-heading h2 {
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(40px, 4.5vw, 60px);
+    font-weight: 400;
+    line-height: 1;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-about__values-grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .koezina-about-value {
+    padding:
+      0
+      45px;
+
+    border-right:
+      1px
+      solid
+      #e5ddd4;
+  }
+
+  .koezina-about-value:first-child {
+    padding-left: 0;
+  }
+
+  .koezina-about-value:last-child {
+    padding-right: 0;
+
+    border-right: 0;
+  }
+
+  .koezina-about-value__number {
+    display: block;
+
+    margin-bottom: 25px;
+
+    color: #b89a73;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .18em;
+  }
+
+  .koezina-about-value h3 {
+    margin:
+      0
+      0
+      15px;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: 27px;
+    font-weight: 400;
+  }
+
+  .koezina-about-value p {
+    max-width: 310px;
+
+    margin: 0;
+
+    color: #777067;
+
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  /* =========================================
+     STATEMENT
+  ========================================== */
+
+  .koezina-about__statement {
+    padding:
+      125px
+      48px
+      135px;
+
+    background: #29261f;
+    color: #fffdf9;
+  }
+
+  .koezina-about__statement-inner {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    text-align: center;
+  }
+
+  .koezina-about__statement-inner p {
+    margin:
+      0
+      0
+      24px;
+
+    color: #b89a73;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+
+  .koezina-about__statement h2 {
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(50px, 6.5vw, 88px);
+    font-weight: 400;
+    line-height: .97;
+
+    letter-spacing: -.045em;
+  }
+
+  /* =========================================
+     CTA
+  ========================================== */
+
+  .koezina-about__cta {
+    padding:
+      85px
+      48px;
+
+    background: #eee7dd;
+  }
+
+  .koezina-about__cta-inner {
+    width: 100%;
+    max-width: 1300px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 50px;
+  }
+
+  .koezina-about__cta h2 {
+    max-width: 720px;
+
+    margin: 0;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+
+    font-size: clamp(38px, 4.5vw, 58px);
+    font-weight: 400;
+    line-height: 1;
+
+    letter-spacing: -.035em;
+  }
+
+  .koezina-about__cta-button {
+    flex: 0 0 auto;
+
+    min-height: 54px;
+
+    padding:
+      0
+      28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    border:
+      1px
+      solid
+      #29261f;
+
+    background: #29261f;
+    color: #fffdf9;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    transition:
+      background .2s ease,
+      color .2s ease;
+  }
+
+  .koezina-about__cta-button:hover {
+    background: transparent;
+    color: #29261f;
+  }
+
+  .koezina-about__cta-button svg {
+    width: 16px;
+    height: 16px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* =========================================
+     TABLET
+  ========================================== */
+
+  @media screen and (max-width: 1000px) {
+
+    .koezina-about__hero {
+      grid-template-columns:
+        1fr
+        1fr;
+    }
+
+    .koezina-about__hero-content {
+      padding:
+        70px
+        40px;
+    }
+
+    .koezina-about__story-content {
+      padding:
+        70px
+        40px;
+    }
+
+    .koezina-about-value {
+      padding:
+        0
+        28px;
+    }
+
+  }
+
+  /* =========================================
+     MOBILE
+  ========================================== */
+
+  @media screen and (max-width: 749px) {
+
+    .koezina-about__hero {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .koezina-about__hero-content {
+      min-height: 430px;
+
+      padding:
+        65px
+        20px;
+    }
+
+    .koezina-about__hero-content h1 {
+      font-size: 52px;
+    }
+
+    .koezina-about__hero-media {
+      min-height: 460px;
+
+      aspect-ratio:
+        1 / 1;
+    }
+
+    .koezina-about__intro {
+      padding:
+        80px
+        20px
+        85px;
+    }
+
+    .koezina-about__intro h2 {
+      font-size: 41px;
+    }
+
+    .koezina-about__story {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .koezina-about__story-media {
+      min-height: 430px;
+
+      aspect-ratio:
+        1 / 1;
+    }
+
+    .koezina-about__story-content {
+      padding:
+        65px
+        20px
+        75px;
+    }
+
+    .koezina-about__story-content h2 {
+      font-size: 40px;
+    }
+
+    .koezina-about__values {
+      padding:
+        80px
+        20px
+        85px;
+    }
+
+    .koezina-about__values-heading {
+      margin-bottom: 35px;
+    }
+
+    .koezina-about__values-heading h2 {
+      font-size: 40px;
+    }
+
+    .koezina-about__values-grid {
+      display: block;
+    }
+
+    .koezina-about-value,
+    .koezina-about-value:first-child,
+    .koezina-about-value:last-child {
+      padding:
+        30px
+        0;
+
+      border-right: 0;
+
+      border-bottom:
+        1px
+        solid
+        #e5ddd4;
+    }
+
+    .koezina-about-value:last-child {
+      border-bottom: 0;
+    }
+
+    .koezina-about__statement {
+      padding:
+        85px
+        20px
+        92px;
+    }
+
+    .koezina-about__statement h2 {
+      font-size: 52px;
+    }
+
+    .koezina-about__cta {
+      padding:
+        68px
+        20px;
+    }
+
+    .koezina-about__cta-inner {
+      align-items: flex-start;
+      flex-direction: column;
+
+      gap: 30px;
+    }
+
+    .koezina-about__cta h2 {
+      font-size: 40px;
+    }
+
+  }
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Koezina about",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "text",
+      "id": "hero_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Our story"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Titel",
+      "default": "Made for everyday moments"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_text",
+      "label": "Tekst",
+      "default": "<p>Koezina brengt doordachte keukenproducten samen met een rustige, tijdloze uitstraling. Producten die ontworpen zijn om iedere dag gebruikt te worden.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero afbeelding"
+    },
+    {
+      "type": "header",
+      "content": "Introductie"
+    },
+    {
+      "type": "text",
+      "id": "intro_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Koezina"
+    },
+    {
+      "type": "text",
+      "id": "intro_heading",
+      "label": "Titel",
+      "default": "Small details. Big difference."
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Tekst",
+      "default": "<p>Koezina betekent ‘keuken’ in het Marokkaans. Voor ons is de keuken meer dan alleen een plek om te koken. Het is een plek waar dagelijkse momenten, routines en herinneringen samenkomen.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Ons verhaal"
+    },
+    {
+      "type": "image_picker",
+      "id": "story_image",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "text",
+      "id": "story_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Why Koezina"
+    },
+    {
+      "type": "text",
+      "id": "story_heading",
+      "label": "Titel",
+      "default": "Thoughtful kitchen essentials"
+    },
+    {
+      "type": "richtext",
+      "id": "story_text",
+      "label": "Tekst",
+      "default": "<p>We geloven dat goede keukenproducten niet ingewikkeld hoeven te zijn. Ze moeten functioneel zijn, prettig aanvoelen en mooi genoeg zijn om onderdeel te worden van je interieur.</p><p>Daarom zoeken we naar producten waarin praktisch gebruik en een rustige uitstraling samenkomen.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Waarden"
+    },
+    {
+      "type": "text",
+      "id": "values_eyebrow",
+      "label": "Kleine tekst",
+      "default": "What matters to us"
+    },
+    {
+      "type": "text",
+      "id": "values_heading",
+      "label": "Titel",
+      "default": "Designed with purpose"
+    },
+    {
+      "type": "text",
+      "id": "value_one_title",
+      "label": "Waarde 1 titel",
+      "default": "Thoughtful design"
+    },
+    {
+      "type": "textarea",
+      "id": "value_one_text",
+      "label": "Waarde 1 tekst",
+      "default": "Rustige vormen en praktische details die passen bij het dagelijks leven."
+    },
+    {
+      "type": "text",
+      "id": "value_two_title",
+      "label": "Waarde 2 titel",
+      "default": "Everyday function"
+    },
+    {
+      "type": "textarea",
+      "id": "value_two_text",
+      "label": "Waarde 2 tekst",
+      "default": "Producten worden gekozen om gebruikt te worden, niet alleen om mooi te staan."
+    },
+    {
+      "type": "text",
+      "id": "value_three_title",
+      "label": "Waarde 3 titel",
+      "default": "Timeless at home"
+    },
+    {
+      "type": "textarea",
+      "id": "value_three_text",
+      "label": "Waarde 3 tekst",
+      "default": "Een warme en tijdloze uitstraling die past binnen verschillende keukens en interieurs."
+    },
+    {
+      "type": "header",
+      "content": "Merkstatement"
+    },
+    {
+      "type": "text",
+      "id": "statement_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Koezina"
+    },
+    {
+      "type": "text",
+      "id": "statement_heading",
+      "label": "Titel",
+      "default": "Small details. Big difference."
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_eyebrow",
+      "label": "Kleine tekst",
+      "default": "Discover Koezina"
+    },
+    {
+      "type": "text",
+      "id": "cta_heading",
+      "label": "Titel",
+      "default": "Designed for the heart of your home"
+    },
+    {
+      "type": "text",
+      "id": "cta_button_label",
+      "label": "Knoptekst",
+      "default": "Bekijk de collectie"
+    }
+  ]
+}
+{% endschema %}
